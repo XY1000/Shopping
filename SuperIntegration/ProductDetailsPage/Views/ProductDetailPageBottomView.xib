@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="zSQ-TK-bRd" customClass="ProductDetailPageBottomView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4zL-6j-vOZ">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pGJ-s5-VlP">
+                            <rect key="frame" x="13" y="0.0" width="49" height="49"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="49" id="I6P-Tx-FYS"/>
+                                <constraint firstAttribute="width" constant="49" id="yyP-8A-6Uq"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <inset key="titleEdgeInsets" minX="-20" minY="24" maxX="0.0" maxY="0.0"/>
+                            <inset key="imageEdgeInsets" minX="12" minY="-15" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="购物车" image="商品详情页面_14">
+                                <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="I6P-Tx-FYS"/>
+                                </mask>
+                            </variation>
+                            <connections>
+                                <action selector="shoppingCartClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="y64-aB-b2I"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="24F-Za-3mV">
+                            <rect key="frame" x="62" y="0.0" width="49" height="49"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <inset key="titleEdgeInsets" minX="-14" minY="24" maxX="0.0" maxY="0.0"/>
+                            <inset key="imageEdgeInsets" minX="12" minY="-15" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="关注" image="商品详情页面_19">
+                                <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="favoriteClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="JJO-TA-OZI"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bCe-d5-Y3s">
+                            <rect key="frame" x="111" y="0.0" width="49" height="49"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <inset key="titleEdgeInsets" minX="-18" minY="24" maxX="0.0" maxY="0.0"/>
+                            <inset key="imageEdgeInsets" minX="12" minY="-15" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="客服" image="商品详情页面_09-16">
+                                <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="customServiceClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="ODU-L0-V9B"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p6r-kt-JPC">
+                            <rect key="frame" x="175" y="10" width="90" height="29"/>
+                            <color key="backgroundColor" red="0.73725490199999999" green="0.0" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <state key="normal" title="立即购买">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="goBuyClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="bI7-xo-RQn"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p1a-EO-0jN">
+                            <rect key="frame" x="275" y="10" width="90" height="29"/>
+                            <color key="backgroundColor" red="0.96078431369999995" green="0.87450980389999999" blue="0.89019607840000003" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <state key="normal" title="加入购物车">
+                                <color key="titleColor" red="0.73725490199999999" green="0.0" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="self.layer.BorderUIColor">
+                                    <color key="value" red="0.73725490199999999" green="0.0" blue="0.12941176469999999" alpha="1" colorSpace="calibratedRGB"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="self.layer.BorderWidth">
+                                    <integer key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="addShoppingCartClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="CGY-qc-acX"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="p1a-EO-0jN" firstAttribute="height" secondItem="p6r-kt-JPC" secondAttribute="height" id="08a-SU-I7m"/>
+                        <constraint firstItem="24F-Za-3mV" firstAttribute="height" secondItem="pGJ-s5-VlP" secondAttribute="height" id="4eX-8D-XZl"/>
+                        <constraint firstItem="24F-Za-3mV" firstAttribute="width" secondItem="pGJ-s5-VlP" secondAttribute="width" id="5EA-9z-Dux"/>
+                        <constraint firstAttribute="trailing" secondItem="p1a-EO-0jN" secondAttribute="trailing" constant="10" id="629-pv-7mh"/>
+                        <constraint firstItem="p1a-EO-0jN" firstAttribute="centerY" secondItem="4zL-6j-vOZ" secondAttribute="centerY" id="AiQ-Zj-eGs"/>
+                        <constraint firstItem="p6r-kt-JPC" firstAttribute="centerY" secondItem="4zL-6j-vOZ" secondAttribute="centerY" id="EYH-yV-K3R"/>
+                        <constraint firstItem="bCe-d5-Y3s" firstAttribute="width" secondItem="pGJ-s5-VlP" secondAttribute="width" id="KEL-yd-Xtq"/>
+                        <constraint firstAttribute="bottom" secondItem="p6r-kt-JPC" secondAttribute="bottom" constant="10" id="YVg-Mz-ebF"/>
+                        <constraint firstItem="bCe-d5-Y3s" firstAttribute="height" secondItem="pGJ-s5-VlP" secondAttribute="height" id="duK-5J-wSv"/>
+                        <constraint firstItem="24F-Za-3mV" firstAttribute="bottom" secondItem="pGJ-s5-VlP" secondAttribute="bottom" id="eKf-gD-YPL"/>
+                        <constraint firstItem="pGJ-s5-VlP" firstAttribute="leading" secondItem="4zL-6j-vOZ" secondAttribute="leading" constant="13" id="fzp-w6-qME"/>
+                        <constraint firstItem="bCe-d5-Y3s" firstAttribute="leading" secondItem="24F-Za-3mV" secondAttribute="trailing" id="jsC-xC-dlU"/>
+                        <constraint firstItem="p6r-kt-JPC" firstAttribute="bottom" secondItem="pGJ-s5-VlP" secondAttribute="bottom" constant="-10" id="on6-7a-Elr"/>
+                        <constraint firstItem="p1a-EO-0jN" firstAttribute="leading" secondItem="p6r-kt-JPC" secondAttribute="trailing" constant="10" id="qwO-1O-rIl"/>
+                        <constraint firstItem="p1a-EO-0jN" firstAttribute="width" secondItem="p6r-kt-JPC" secondAttribute="width" id="uZT-gG-LpP"/>
+                        <constraint firstItem="24F-Za-3mV" firstAttribute="leading" secondItem="pGJ-s5-VlP" secondAttribute="trailing" id="v6g-F4-PMH"/>
+                        <constraint firstItem="p6r-kt-JPC" firstAttribute="leading" secondItem="bCe-d5-Y3s" secondAttribute="trailing" constant="15" id="wAm-9L-U1q"/>
+                        <constraint firstItem="pGJ-s5-VlP" firstAttribute="top" secondItem="4zL-6j-vOZ" secondAttribute="top" id="xhX-mf-JID"/>
+                        <constraint firstItem="p6r-kt-JPC" firstAttribute="top" secondItem="4zL-6j-vOZ" secondAttribute="top" constant="10" id="yyU-c0-B4V"/>
+                        <constraint firstItem="bCe-d5-Y3s" firstAttribute="bottom" secondItem="pGJ-s5-VlP" secondAttribute="bottom" id="zfD-Ry-B4x"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="4zL-6j-vOZ" secondAttribute="bottom" id="6G0-Zx-4Ng"/>
+                <constraint firstItem="4zL-6j-vOZ" firstAttribute="leading" secondItem="zSQ-TK-bRd" secondAttribute="leading" id="Bpx-dV-qd3"/>
+                <constraint firstItem="4zL-6j-vOZ" firstAttribute="top" secondItem="zSQ-TK-bRd" secondAttribute="top" id="P2B-rp-zap"/>
+                <constraint firstAttribute="trailing" secondItem="4zL-6j-vOZ" secondAttribute="trailing" id="y4d-Ir-BnS"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="addShoppingCartButton" destination="p1a-EO-0jN" id="24X-iR-Riz"/>
+                <outlet property="btn_CustomerService" destination="bCe-d5-Y3s" id="EJj-9t-RVA"/>
+                <outlet property="btn_Favorite" destination="24F-Za-3mV" id="cya-ll-1Zn"/>
+                <outlet property="btn_GoBuy" destination="p6r-kt-JPC" id="ai6-0d-9tQ"/>
+                <outlet property="btn_ShoppingCart" destination="pGJ-s5-VlP" id="zx6-kx-wcP"/>
+                <outlet property="favouriteButton" destination="24F-Za-3mV" id="Rt4-ev-c6W"/>
+            </connections>
+            <point key="canvasLocation" x="413.5" y="447.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="商品详情页面_09-16" width="18" height="18"/>
+        <image name="商品详情页面_14" width="22" height="18"/>
+        <image name="商品详情页面_19" width="16" height="16"/>
+    </resources>
+</document>

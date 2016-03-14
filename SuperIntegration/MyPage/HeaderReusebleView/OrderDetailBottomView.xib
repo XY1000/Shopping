@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" restorationIdentifier="OrderDetailBottomView" id="iN0-l3-epB" customClass="OrderDetailBottomView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="biz-Wf-u3G">
+                    <rect key="frame" x="247" y="10" width="98" height="30"/>
+                    <color key="backgroundColor" red="0.73725490199999999" green="0.0" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="再次购买">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="payClicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="uel-sW-2Uk"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZdI-bc-OEe">
+                    <rect key="frame" x="138" y="10" width="99" height="30"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="y7O-aV-TkR"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="申请售后">
+                        <color key="titleColor" red="0.80000000000000004" green="0.039215686274509803" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="serviceClicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="ryw-fZ-hPD"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W2d-yD-4gi">
+                    <rect key="frame" x="30" y="10" width="98" height="30"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" title="删除订单">
+                        <color key="titleColor" red="0.80000000000000004" green="0.039215686270000001" blue="0.1647058824" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="deleteClicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="Z0Z-9n-eni"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="width" secondItem="W2d-yD-4gi" secondAttribute="width" id="0hX-Vh-0G5"/>
+                <constraint firstItem="biz-Wf-u3G" firstAttribute="centerY" secondItem="W2d-yD-4gi" secondAttribute="centerY" id="G01-rm-tpL"/>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="height" secondItem="W2d-yD-4gi" secondAttribute="height" id="IKg-cO-V0F"/>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="leading" secondItem="W2d-yD-4gi" secondAttribute="trailing" constant="10" id="LJ6-3T-8mc"/>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="O5V-av-7b8"/>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="centerY" secondItem="W2d-yD-4gi" secondAttribute="centerY" id="XV6-MA-B7r"/>
+                <constraint firstItem="ZdI-bc-OEe" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="fhl-5o-NF1"/>
+                <constraint firstItem="biz-Wf-u3G" firstAttribute="height" secondItem="W2d-yD-4gi" secondAttribute="height" id="hNa-mA-Zvi"/>
+                <constraint firstAttribute="trailing" secondItem="biz-Wf-u3G" secondAttribute="trailing" constant="30" id="ksT-4A-yEC"/>
+                <constraint firstItem="biz-Wf-u3G" firstAttribute="width" secondItem="W2d-yD-4gi" secondAttribute="width" id="toj-ty-Nc3"/>
+                <constraint firstItem="W2d-yD-4gi" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="30" id="wFM-K6-U6U"/>
+                <constraint firstItem="biz-Wf-u3G" firstAttribute="leading" secondItem="ZdI-bc-OEe" secondAttribute="trailing" constant="10" id="zjM-NZ-lP0"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="againBuyButton" destination="biz-Wf-u3G" id="8Lw-p8-sI4"/>
+                <outlet property="customerButton" destination="ZdI-bc-OEe" id="EMM-AD-mdh"/>
+                <outlet property="deleteOrderButton" destination="W2d-yD-4gi" id="goG-iY-4uA"/>
+            </connections>
+        </view>
+    </objects>
+</document>

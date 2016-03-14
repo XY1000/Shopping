@@ -1,0 +1,65 @@
+//
+//  PrefixHeader.pch
+//  MeridianStreamer
+//
+//  Created by PP－mac001 on 15/9/1.
+//  Copyright (c) 2015年 PP－mac001. All rights reserved.
+//
+
+#ifndef MeridianStreamer_PrefixHeader_pch
+#define MeridianStreamer_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+#import <Foundation/Foundation.h>
+
+/**
+ *  ThirdPod
+ */
+#import "MJRefresh.h"
+#import "SVProgressHUD.h"
+#import "UIImageView+WebCache.h"
+#import "UIButton+WebCache.h"
+#import <MJExtension.h>
+#import "LoadDataView.h"
+
+/**
+ *  Utilities Utility
+ */
+#import "Utility.h"
+/**
+ *  Utilities DefineHeader
+ */
+#import "DefineHeader.h"
+/*
+    Utilities   Category
+ */
+#import "CategoryHeader.h"
+/**
+ *  Utilities   NetworkService
+ */
+#import "NetService/NetworkService.h"
+
+/**
+ *  Controller DefineHeader
+ */
+#import "PublicDefineHeader.h"
+#import "HomePageDefineHeader.h"
+#import "ProductDetailPageDefineHeader.h"
+#import "SearchResultDefineHeader.h"
+#import "ShoppingCartPageDefineHeader.h"
+#import "MineDefineHeader.h"
+#import "ClassifyPageDefineHeader.h"
+#import "SuperIntegration-Swift.h"
+
+/**
+ *  @author hxy
+ *
+ *  添加的宏
+ */
+
+#import "Macros.h"
+
+
+
+#endif

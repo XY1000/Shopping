@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="xfX-ZF-WN1" customClass="MineHeaderCollectionReusableView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="200"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VkZ-9N-rex">
+                    <rect key="frame" x="0.0" y="160" width="375" height="40"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="我的订单" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H0e-Fn-tTD">
+                            <rect key="frame" x="12" y="9" width="76" height="23"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                            <color key="textColor" red="0.082352941176470587" green="0.090196078431372548" blue="0.094117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jjn-Sk-Eo8">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <inset key="titleEdgeInsets" minX="230" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <inset key="imageEdgeInsets" minX="350" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="查看全部订单" image="积分兑换_07">
+                                <color key="titleColor" red="0.20784313725490197" green="0.21176470588235294" blue="0.2196078431372549" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="lookAllOrderClicked:" destination="xfX-ZF-WN1" eventType="touchUpInside" id="SKP-7A-t40"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="jjn-Sk-Eo8" secondAttribute="trailing" id="694-4s-Gb9"/>
+                        <constraint firstItem="jjn-Sk-Eo8" firstAttribute="top" secondItem="VkZ-9N-rex" secondAttribute="top" id="7Gw-DC-qBt"/>
+                        <constraint firstItem="jjn-Sk-Eo8" firstAttribute="leading" secondItem="VkZ-9N-rex" secondAttribute="leading" id="BTY-MB-aZx"/>
+                        <constraint firstAttribute="bottom" secondItem="jjn-Sk-Eo8" secondAttribute="bottom" id="FG0-Tl-KmV"/>
+                        <constraint firstItem="H0e-Fn-tTD" firstAttribute="leading" secondItem="VkZ-9N-rex" secondAttribute="leading" constant="12" id="FQc-Wd-yoz"/>
+                        <constraint firstItem="H0e-Fn-tTD" firstAttribute="centerY" secondItem="VkZ-9N-rex" secondAttribute="centerY" id="fQL-So-mSZ"/>
+                        <constraint firstAttribute="height" constant="40" id="hrY-Uf-SaZ"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.96078431369999995" green="0.96470588239999999" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="VkZ-9N-rex" secondAttribute="bottom" id="Ord-fL-ufR"/>
+                <constraint firstItem="VkZ-9N-rex" firstAttribute="leading" secondItem="xfX-ZF-WN1" secondAttribute="leading" id="pIo-im-QiO"/>
+                <constraint firstAttribute="trailing" secondItem="VkZ-9N-rex" secondAttribute="trailing" id="rnE-Bz-oui"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="BackViewToReusableViewHeightLayoutConstraint" destination="hrY-Uf-SaZ" id="ocG-iS-1H3"/>
+                <outlet property="lookAllOrderButton" destination="jjn-Sk-Eo8" id="I9c-TU-iql"/>
+                <outlet property="titleLabel" destination="H0e-Fn-tTD" id="T4b-23-5On"/>
+            </connections>
+            <point key="canvasLocation" x="277.5" y="396"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="积分兑换_07" width="5" height="6"/>
+    </resources>
+</document>

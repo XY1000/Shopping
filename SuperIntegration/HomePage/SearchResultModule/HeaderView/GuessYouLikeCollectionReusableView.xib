@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="U6b-Vx-4bR">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="猜你喜欢" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z3M-J1-0GX">
+                    <rect key="frame" x="136" y="17" width="48" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mue-d9-K3L">
+                    <rect key="frame" x="0.0" y="24" width="126" height="1"/>
+                    <color key="backgroundColor" red="0.90588235294117647" green="0.90980392156862744" blue="0.9137254901960784" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="xD9-gQ-9j7"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ipZ-C6-1Co">
+                    <rect key="frame" x="194" y="24" width="126" height="1"/>
+                    <color key="backgroundColor" red="0.90588235289999997" green="0.90980392160000001" blue="0.91372549020000005" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="nU0-MJ-lfU"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.96078431372549022" green="0.96470588235294119" blue="0.96862745098039216" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="z3M-J1-0GX" firstAttribute="leading" secondItem="mue-d9-K3L" secondAttribute="trailing" constant="10" id="3cV-06-jk5"/>
+                <constraint firstItem="mue-d9-K3L" firstAttribute="leading" secondItem="U6b-Vx-4bR" secondAttribute="leading" id="9kM-2E-7BV"/>
+                <constraint firstAttribute="trailing" secondItem="ipZ-C6-1Co" secondAttribute="trailing" id="Dw3-hA-I16"/>
+                <constraint firstItem="z3M-J1-0GX" firstAttribute="centerY" secondItem="U6b-Vx-4bR" secondAttribute="centerY" id="P5c-db-TX3"/>
+                <constraint firstItem="z3M-J1-0GX" firstAttribute="centerY" secondItem="mue-d9-K3L" secondAttribute="centerY" id="R7l-b2-P3p"/>
+                <constraint firstItem="ipZ-C6-1Co" firstAttribute="leading" secondItem="z3M-J1-0GX" secondAttribute="trailing" constant="10" id="ndq-Be-MRF"/>
+                <constraint firstItem="z3M-J1-0GX" firstAttribute="centerX" secondItem="U6b-Vx-4bR" secondAttribute="centerX" id="qAp-23-HQl"/>
+                <constraint firstItem="ipZ-C6-1Co" firstAttribute="centerY" secondItem="z3M-J1-0GX" secondAttribute="centerY" id="zMO-2z-7qy"/>
+            </constraints>
+            <point key="canvasLocation" x="308" y="404"/>
+        </collectionReusableView>
+    </objects>
+</document>

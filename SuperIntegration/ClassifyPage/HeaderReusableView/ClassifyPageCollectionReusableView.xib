@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="hgk-ym-cSg" customClass="ClassifyPageCollectionReusableView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="68"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6rG-1K-18n">
+                    <rect key="frame" x="13" y="23" width="47" height="22"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="18"/>
+                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstItem="6rG-1K-18n" firstAttribute="centerY" secondItem="hgk-ym-cSg" secondAttribute="centerY" id="Hdy-zl-qtN"/>
+                <constraint firstItem="6rG-1K-18n" firstAttribute="leading" secondItem="hgk-ym-cSg" secondAttribute="leading" constant="13" id="SHH-Oh-vIy"/>
+            </constraints>
+            <connections>
+                <outlet property="headerViewTitleLabel" destination="6rG-1K-18n" id="gbz-fA-6Pg"/>
+                <outlet property="titleLabelToLeftLayoutConstraint" destination="SHH-Oh-vIy" id="P01-vh-Pf3"/>
+            </connections>
+            <point key="canvasLocation" x="418" y="335"/>
+        </collectionReusableView>
+    </objects>
+</document>

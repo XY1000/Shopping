@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="CustomNavigationBarView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qMY-8i-n2f">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                    <color key="backgroundColor" red="0.9137254901960784" green="0.11764705882352941" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PdQ-Cj-dax">
+                    <rect key="frame" x="10" y="25" width="315" height="31"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="31" id="CSe-zb-at0"/>
+                        <constraint firstAttribute="width" constant="315" id="d5c-Yi-GzD"/>
+                    </constraints>
+                    <inset key="titleEdgeInsets" minX="-10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <inset key="imageEdgeInsets" minX="285" minY="0.0" maxX="10" maxY="0.0"/>
+                    <state key="normal" title="请输入关键词" image="首页_06">
+                        <color key="titleColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="self.layer.masksToBounds" value="YES"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="self.layer.cornerRadius">
+                            <integer key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="searchClicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="hBr-Kr-Jos"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UqX-wp-F54">
+                    <rect key="frame" x="325" y="25" width="50" height="34"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="31" id="Axa-oq-Bh8"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <inset key="titleEdgeInsets" minX="-20" minY="10" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" image="首页_03">
+                        <color key="titleColor" white="0.12669613486842105" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="Axa-oq-Bh8"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <action selector="newsCliked:" destination="iN0-l3-epB" eventType="touchUpInside" id="zbJ-W1-mcR"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="qMY-8i-n2f" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="2o4-2w-qCo"/>
+                <constraint firstAttribute="trailing" secondItem="qMY-8i-n2f" secondAttribute="trailing" id="9Dq-2z-kED"/>
+                <constraint firstItem="UqX-wp-F54" firstAttribute="bottom" secondItem="PdQ-Cj-dax" secondAttribute="bottom" id="FZ9-uX-cNq"/>
+                <constraint firstItem="qMY-8i-n2f" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Ijx-D0-B3A"/>
+                <constraint firstAttribute="bottom" secondItem="PdQ-Cj-dax" secondAttribute="bottom" constant="8" id="KXU-aW-5YN"/>
+                <constraint firstAttribute="bottom" secondItem="qMY-8i-n2f" secondAttribute="bottom" id="Nis-Ax-4Wr"/>
+                <constraint firstItem="UqX-wp-F54" firstAttribute="top" secondItem="PdQ-Cj-dax" secondAttribute="top" id="Vht-EW-IMS"/>
+                <constraint firstItem="UqX-wp-F54" firstAttribute="leading" secondItem="PdQ-Cj-dax" secondAttribute="trailing" id="bpu-on-E2N"/>
+                <constraint firstAttribute="trailing" secondItem="UqX-wp-F54" secondAttribute="trailing" id="fXO-Vd-GDU"/>
+                <constraint firstItem="PdQ-Cj-dax" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="os4-Sn-i4B"/>
+                <constraint firstAttribute="bottom" secondItem="UqX-wp-F54" secondAttribute="bottom" constant="5" id="xIX-Og-N0l"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="FZ9-uX-cNq"/>
+                </mask>
+            </variation>
+            <connections>
+                <outlet property="backView" destination="qMY-8i-n2f" id="GQA-UG-7d3"/>
+                <outlet property="searchButton" destination="PdQ-Cj-dax" id="Jzo-Tz-fdO"/>
+                <outlet property="searchButtonWidthLayoutConstraint" destination="d5c-Yi-GzD" id="UrI-fG-uRO"/>
+            </connections>
+            <point key="canvasLocation" x="384.5" y="440"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="首页_03" width="18" height="18"/>
+        <image name="首页_06" width="15" height="15"/>
+    </resources>
+</document>

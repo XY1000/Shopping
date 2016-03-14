@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="SearchResultHeaderReusableView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jWD-DC-6Rh">
+                    <rect key="frame" x="0.0" y="0.0" width="94" height="50"/>
+                    <inset key="titleEdgeInsets" minX="-18" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <inset key="imageEdgeInsets" minX="80" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" title="默认排序" image="搜索结果页1_03">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="button1Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="oAR-QY-fXu"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4lW-Gl-6la">
+                    <rect key="frame" x="188" y="0.0" width="93" height="50"/>
+                    <inset key="imageEdgeInsets" minX="78" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" title="销量" image="搜索结果页_综合排序展开_10">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected" title="销量">
+                        <color key="titleColor" red="0.73725490196078436" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="button3Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="slp-Wn-efE"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ID9-S1-6hb">
+                    <rect key="frame" x="281" y="0.0" width="94" height="50"/>
+                    <inset key="titleEdgeInsets" minX="36" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" title="筛选">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="button4Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="dQr-T5-SHB"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h0H-hQ-ned">
+                    <rect key="frame" x="94" y="0.0" width="94" height="50"/>
+                    <inset key="imageEdgeInsets" minX="78" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" title="价格" image="搜索结果页_综合排序展开_10">
+                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected" title="价格">
+                        <color key="titleColor" red="0.73725490196078436" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="button2Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="ImW-8Q-lXt"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="4lW-Gl-6la" firstAttribute="height" secondItem="jWD-DC-6Rh" secondAttribute="height" id="7ba-hc-4bJ"/>
+                <constraint firstItem="h0H-hQ-ned" firstAttribute="height" secondItem="jWD-DC-6Rh" secondAttribute="height" id="80c-qR-2Ff"/>
+                <constraint firstAttribute="bottom" secondItem="jWD-DC-6Rh" secondAttribute="bottom" id="CKz-fQ-0uL"/>
+                <constraint firstItem="4lW-Gl-6la" firstAttribute="bottom" secondItem="jWD-DC-6Rh" secondAttribute="bottom" id="EtQ-YK-lUN"/>
+                <constraint firstItem="h0H-hQ-ned" firstAttribute="bottom" secondItem="jWD-DC-6Rh" secondAttribute="bottom" id="MIj-CK-4WA"/>
+                <constraint firstItem="h0H-hQ-ned" firstAttribute="width" secondItem="jWD-DC-6Rh" secondAttribute="width" id="U8Z-yn-FvS"/>
+                <constraint firstAttribute="trailing" secondItem="ID9-S1-6hb" secondAttribute="trailing" id="ZOF-nk-iab"/>
+                <constraint firstItem="jWD-DC-6Rh" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="eVH-dR-zXb"/>
+                <constraint firstItem="h0H-hQ-ned" firstAttribute="leading" secondItem="jWD-DC-6Rh" secondAttribute="trailing" id="ecv-JK-quR"/>
+                <constraint firstItem="ID9-S1-6hb" firstAttribute="leading" secondItem="4lW-Gl-6la" secondAttribute="trailing" id="epd-8T-YLY"/>
+                <constraint firstItem="ID9-S1-6hb" firstAttribute="width" secondItem="jWD-DC-6Rh" secondAttribute="width" id="gjy-HS-7FL"/>
+                <constraint firstItem="4lW-Gl-6la" firstAttribute="top" secondItem="jWD-DC-6Rh" secondAttribute="top" id="h6G-aH-l1D"/>
+                <constraint firstItem="ID9-S1-6hb" firstAttribute="bottom" secondItem="jWD-DC-6Rh" secondAttribute="bottom" id="lpQ-NI-tAc"/>
+                <constraint firstItem="4lW-Gl-6la" firstAttribute="width" secondItem="jWD-DC-6Rh" secondAttribute="width" id="phS-9A-zQa"/>
+                <constraint firstItem="4lW-Gl-6la" firstAttribute="leading" secondItem="h0H-hQ-ned" secondAttribute="trailing" id="uAq-tj-R3h"/>
+                <constraint firstItem="ID9-S1-6hb" firstAttribute="top" secondItem="jWD-DC-6Rh" secondAttribute="top" id="vK5-jp-faF"/>
+                <constraint firstItem="h0H-hQ-ned" firstAttribute="top" secondItem="jWD-DC-6Rh" secondAttribute="top" id="xM2-NP-HTY"/>
+                <constraint firstItem="ID9-S1-6hb" firstAttribute="height" secondItem="jWD-DC-6Rh" secondAttribute="height" id="xf0-U1-IUr"/>
+                <constraint firstItem="jWD-DC-6Rh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="yZZ-u4-3AV"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="button1Btn" destination="jWD-DC-6Rh" id="HBy-Vw-Hq3"/>
+                <outlet property="button2Btn" destination="h0H-hQ-ned" id="MSB-Cr-FU0"/>
+                <outlet property="button3Btn" destination="4lW-Gl-6la" id="Epg-fi-fxV"/>
+                <outlet property="button4Btn" destination="ID9-S1-6hb" id="eYK-jc-hsZ"/>
+            </connections>
+            <point key="canvasLocation" x="501.5" y="518"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="搜索结果页1_03" width="9" height="5"/>
+        <image name="搜索结果页_综合排序展开_10" width="5" height="11"/>
+    </resources>
+</document>
