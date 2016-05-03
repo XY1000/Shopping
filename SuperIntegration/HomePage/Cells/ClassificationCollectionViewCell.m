@@ -25,7 +25,6 @@
 - (void)cellWithImage:(NSString *)Image title:(NSString *)Title {
     self.classificationLabel.text = Title;
     self.classificationImageView.image = [UIImage imageNamed:Image];
-    [self.classificationImageView annimation_RotateView:self.classificationImageView duration:1 degrees:180.0 x:0 y:0 z:1 repeatCount:1];
 }
 
 @end

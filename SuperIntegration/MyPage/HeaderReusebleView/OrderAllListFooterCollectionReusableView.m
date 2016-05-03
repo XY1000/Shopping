@@ -25,7 +25,7 @@
 }
 
 - (void)viewWithModel:(OrderModel *)model {
-    self.priceLabel.text = [NSString stringWithFormat:@"%ld",(long)model.orderAmount];
+    self.priceLabel.text = model.orderAmount;
     if ([model.status isEqualToString:@"订单已完成"]) {
         self.deleteButton.hidden = NO;
         self.againButton.hidden = NO;

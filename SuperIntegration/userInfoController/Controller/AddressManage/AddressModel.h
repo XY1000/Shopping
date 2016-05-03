@@ -38,6 +38,8 @@
 
 @property (nonatomic, copy) NSString *telephone;
 
+@property (copy, nonatomic) NSString *phone;
+
 @property (nonatomic, assign) NSInteger isDefault;
 
 @property (nonatomic, copy) NSString *name;
@@ -45,6 +47,12 @@
 @property(nonatomic,copy)NSString *fullAddress;
 
 @property(nonatomic,copy)NSString *provinceName;
+
+@property(nonatomic,copy)NSString *countyName;
+
+@property(nonatomic,copy)NSString *townName;
+
+@property(nonatomic,copy)NSString *cityName;
 
 @end
 

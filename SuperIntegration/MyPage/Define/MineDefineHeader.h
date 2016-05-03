@@ -19,7 +19,7 @@
 #define MineSectionZeroButtonTitleInsets        MineSectionZeroButtonHeight * 40 / 100
 #define MineSectionZeroLabelToTopValue          MineSectionZeroButtonHeight * 10 / 100
 
-#define MineSectionOneCellWith                  SCREEN_WIDTH / 4
+#define MineSectionOneCellWith                  SCREEN_WIDTH / 3
 #define MineSectionOneCellHeight                SCREEN_HEIGHT * 165 / (667 * 2)
 
 #define MineSectionTwoCellHeight                SCREEN_HEIGHT * 220 / (667 * 2)

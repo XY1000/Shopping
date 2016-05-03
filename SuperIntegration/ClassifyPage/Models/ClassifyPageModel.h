@@ -16,19 +16,21 @@
 /**
  *  频道Id
  */
-@property (strong, nonatomic) NSString *channelId;
+@property (copy, nonatomic) NSString *channelId;
 /**
  *  频道名称
  */
-@property (strong, nonatomic) NSString *channelName;
+@property (copy, nonatomic) NSString *channelName;
 /**
  *  分类图片url
  */
-@property (strong, nonatomic) NSString *webPicUrl;
+@property (copy, nonatomic) NSString *webPicUrl;
+@property (copy, nonatomic) NSString *appPicUrl;
+@property (copy, nonatomic) NSString *appName;
 /**
  *  分类列表
  */
-@property (strong, nonatomic) NSArray *subChannelList;
+@property (strong, nonatomic) NSMutableArray *subChannelList;
 
 + (ClassifyPageChannelListModel *)modelWithDic:(NSDictionary *)dic;
 
@@ -39,23 +41,23 @@
 /**
  *  分类id
  */
-@property (strong, nonatomic) NSString *subChannelId;
+@property (copy, nonatomic) NSString *subChannelId;
 /**
  *  分类名称
  */
-@property (strong, nonatomic) NSString *subCahnnelName;
+@property (copy, nonatomic) NSString *subCahnnelName;
 /**
  *  苏宁分类id
  */
-@property (strong, nonatomic) NSString *subChannelSnCategoryId;
+@property (copy, nonatomic) NSString *subChannelSnCategoryId;
 /**
  *  父级分类id
  */
-@property (strong, nonatomic) NSString *subChannelCategoryId;
+@property (copy, nonatomic) NSString *subChannelCategoryId;
 /**
  *  关键字列表
  */
-@property (strong, nonatomic) NSArray *subChannelKeyWordList;
+@property (strong, nonatomic) NSMutableArray *subChannelKeyWordList;
 
 + (ClassifyPageSubChannelListModel *)modelWithDic:(NSDictionary *)dic;
 
@@ -66,11 +68,11 @@
 /**
  *  关键字Id
  */
-@property (strong, nonatomic) NSString *keyWordId;
+@property (copy, nonatomic) NSString *keyWordId;
 /**
  *  关键字名称
  */
-@property (strong, nonatomic) NSString *keyWordName;
+@property (copy, nonatomic) NSString *keyWordName;
 /**
  *  关键字图片
  */

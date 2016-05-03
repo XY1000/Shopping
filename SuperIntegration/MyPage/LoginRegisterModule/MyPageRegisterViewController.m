@@ -89,6 +89,7 @@
                                                           Success:^{
                                                               DLog(@"validateCodeSuccess");
                                                               ConfirmRegisterViewController *confirmRegisterCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"ConfirmRegisterViewController"];
+                                                              confirmRegisterCon.phone = self.phoneTextField.text;
                                                               [self.navigationController pushViewController:confirmRegisterCon animated:YES];
                                                           } Failure:^(NSError *error) {
                                                               [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@", error.userInfo[@"errmsg"]]];

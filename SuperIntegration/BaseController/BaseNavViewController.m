@@ -17,7 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationBar.barTintColor = [UIColor colorWithRed:188/255.0 green:0/255.0 blue:32/255.0 alpha:1.0f];
+    self.navigationBar.barTintColor = [UIColor colorWithRed:204/255.0 green:10/255.0 blue:42/255.0 alpha:1.0f];
     self.navigationBar.translucent = NO;
     
     // 设置标题颜色
@@ -29,7 +29,7 @@
     // 设置item样式
     NSMutableDictionary *textAttrs = [NSMutableDictionary dictionary];
     textAttrs[NSForegroundColorAttributeName] = [UIColor whiteColor];
-    textAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:17];
+    textAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:15.0];
     [ [UIBarButtonItem appearance] setTitleTextAttributes:textAttrs forState:UIControlStateNormal];
     
     //侧滑返回

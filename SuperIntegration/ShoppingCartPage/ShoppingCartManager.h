@@ -16,6 +16,9 @@ typedef enum
 @interface ShoppingCartManager : NSObject
 +(instancetype)sharedInstance;
 
+
+//购物车所有商品
+@property (strong, nonatomic) NSArray *allMArray;
 //结算选上的购物车
 @property (strong, nonatomic) NSMutableArray *completeSelectedMArray;
 //删除悬赏的购物车

@@ -27,9 +27,9 @@
     // Configure the view for the selected state
 }
 
-- (void)cellWithProductPrice:(NSString *)productPrice roadPrice:(NSString *)roadPrice {
+- (void)cellWithProductPrice:(NSString *)productPrice roadPrice:(CGFloat)roadPrice {
     self.productPayAmountLabel.text = [NSString stringWithFormat:@"%@分", productPrice];
-    self.roadPayAmountLabel.text = [NSString stringWithFormat:@"%@分", roadPrice];
+    self.roadPayAmountLabel.text = [NSString stringWithFormat:@"%.2f分", roadPrice];
 }
 
 @end

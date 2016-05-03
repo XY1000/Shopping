@@ -10,7 +10,7 @@
 
 @interface OrderFillInTableViewController : UITableViewController
 
-@property (copy, nonatomic) NSString *allPrice;
+
 @property (strong, nonatomic) NSArray *productsArray;
 
 @end

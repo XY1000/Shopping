@@ -33,7 +33,11 @@
 - (void)cellWithModel:(AddresslistModel *)model {
     self.model_Address = model;
     self.nameLabel.text = model.contact;
-    self.phoneLabel.text = [NSString stringWithFormat:@"%@", [model.telephone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];
+    if (!STR_IS_NIL(model.telephone)) {
+        self.phoneLabel.text = [NSString stringWithFormat:@"%@", [model.telephone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];
+    } else {
+        self.phoneLabel.text = [NSString stringWithFormat:@"%@", [model.phone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];;
+    }
     self.addressDesLabel.text = model.addressDetail;
     
     if (model.isDefault == 1) {
@@ -45,7 +49,11 @@
 
 - (void)cellWithOrderDetailModel:(OrderDetailModel *)orderDetailModel {
     self.nameLabel.text = orderDetailModel.contact;
-    self.phoneLabel.text = [NSString stringWithFormat:@"%@", [orderDetailModel.telephone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];
+    if (!STR_IS_NIL(orderDetailModel.telephone)) {
+        self.phoneLabel.text = [NSString stringWithFormat:@"%@", [orderDetailModel.telephone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];
+    } else {
+        self.phoneLabel.text = [NSString stringWithFormat:@"%@", [orderDetailModel.phone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];;
+    }
     self.addressDesLabel.text = orderDetailModel.address;
 }
 

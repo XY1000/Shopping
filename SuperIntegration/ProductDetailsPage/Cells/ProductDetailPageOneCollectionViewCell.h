@@ -10,6 +10,6 @@
 @class ProductDetailPageModel;
 @interface ProductDetailPageOneCollectionViewCell : UICollectionViewCell
 
-- (void)cellWithModel:(ProductDetailPageModel *)model andPrice:(NSInteger)price;
+- (void)cellWithModel:(ProductDetailPageModel *)model andPrice:(NSString *)price;
 
 @end

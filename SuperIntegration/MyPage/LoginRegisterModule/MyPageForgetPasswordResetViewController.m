@@ -38,14 +38,15 @@
         [SVProgressHUD showErrorWithStatus:@"请输入确认密码"];
         return;
     }
-    if (((self.txt_NewPassword.text.length < 6) || (self.txt_NewPassword.text.length > 20)) || ((self.txt_DeterminePassword.text.length < 6) || (self.txt_DeterminePassword.text.length > 20))) {
-        [SVProgressHUD showErrorWithStatus:@"密码为6-20位字母和数字的组合"];
-        return;
-    }
     if (![self.txt_NewPassword.text isEqualToString:self.txt_DeterminePassword.text]) {
         [SVProgressHUD showErrorWithStatus:@"两次输入密码不一致"];
         return;
     }
+    if (![Utility evaluateWithPassword:self.txt_DeterminePassword.text]) {
+        [SVProgressHUD showErrorWithStatus:@"密码为6-20位字母和数字的组合"];
+        return;
+    }
+    
     [[NetworkService sharedInstance] postForgetPasswordResetWithPassword:self.txt_DeterminePassword.text
                                                                  Success:^{
                                                                      DLog(@"resetSuccess");
@@ -54,5 +55,6 @@
                                                                  } Failure:^(NSError *error) {
                                                                      [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@", error.userInfo[@"errmsg"]]];
                                                                  }];
+    
 }
 @end

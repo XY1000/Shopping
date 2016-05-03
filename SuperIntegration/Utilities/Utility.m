@@ -46,6 +46,12 @@
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
     return [emailTest evaluateWithObject:email];
 }
+#pragma mark 6-12位字母数字判断
++ (BOOL)evaluateWithPassword:(NSString *)password {
+    NSString * regex = @"^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    return [pred evaluateWithObject:password];
+}
 #pragma mark 16进制颜色转换
 + (UIColor *)colorWithHexString:(NSString *)stringToConvert
 {
@@ -152,7 +158,7 @@
     /**
      *  延时1s执行方法
      */
-    double delayInSeconds = 1.0;
+    CGFloat delayInSeconds = seconds;
 //    __block JibingXinxiViewController *bself = self;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -217,7 +223,7 @@
 #pragma mark popView动画
 + (void)popAnnimationWithView:(UIView *)view {
     CATransition *transition = [CATransition animation];
-    transition.duration = 0.8f;
+    transition.duration = 0.2f;
     transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     transition.type = kCATransitionPush;
     transition.subtype = kCATransitionFromLeft;
@@ -319,5 +325,15 @@
 +(void)clearCacheSuccess
 {
     [SVProgressHUD showSuccessWithStatus:@"清理成功!"];
+}
+
+#pragma mark textField字边距
++(void)setTextFieldLeftPadding:(UITextField *)textField forWidth:(CGFloat)leftWidth
+{
+    CGRect frame = textField.frame;
+    frame.size.width = leftWidth;
+    UIView *leftview = [[UIView alloc] initWithFrame:frame];
+    textField.leftViewMode = UITextFieldViewModeAlways;
+    textField.leftView = leftview;
 }
 @end

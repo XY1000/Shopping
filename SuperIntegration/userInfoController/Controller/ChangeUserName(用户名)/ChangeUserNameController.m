@@ -42,29 +42,32 @@
 }
 - (void)rightBtnClick:(UIButton *)sender{
     
-    if (self.txt_name.text.length >= 1&& self.txt_name.text.length <= 5) {
+    if (self.txt_name.text.length >= 1&& self.txt_name.text.length <= 20) {
         
         
         
         DLog(@"realName = %@",_model.realname);
-        
-        
-        [[NetworkService sharedInstance] putUserChangeInformationWithRealName:self.txt_name.text  NickName:_model.nickname Sex:_model.sex Success:^{
-            
-            _model.realname = self.txt_name.text;
-            [self.navigationController popViewControllerAnimated:YES];
-            
-        } Failure:^(NSError *error) {
-            
-            [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
-            
-        }];
-        
+        NSString *regex = @"^[a-zA-Z0-9\u4e00-\u9fa5]+$";
+        NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+        if (![pred evaluateWithObject:self.txt_name.text]) {
+            [SVProgressHUD showErrorWithStatus:@"昵称只能由中文、字母或数字组成"];
+        } else {
+            [[NetworkService sharedInstance] putUserChangeInformationWithRealName:self.txt_name.text  NickName:_model.nickname Sex:_model.sex Success:^{
+                
+                _model.realname = self.txt_name.text;
+                [self.navigationController popViewControllerAnimated:YES];
+                
+            } Failure:^(NSError *error) {
+                
+                [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+                
+            }];
+        }
         
         
     }else{
         
-        [SVProgressHUD showErrorWithStatus:@"请输入1 - 5位"];
+        [SVProgressHUD showErrorWithStatus:@"请输入1 - 20位"];
         
     }
     
@@ -84,7 +87,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
     
-    NSString *str = @"1-5个字符";
+    NSString *str = @"1-20个字符";
     
     return str;
     
@@ -97,7 +100,7 @@
     UITableViewHeaderFooterView *foot = (UITableViewHeaderFooterView *)view;
     foot.textLabel.textColor = [UIColor lightGrayColor];
     
-    
+    foot.textLabel.font = [UIFont systemFontOfSize:13];
 }
 
 @end

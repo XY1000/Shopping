@@ -30,9 +30,14 @@
     [self.labelToLabelTopLayoutConstraint setConstant:ProductDetailPage_TopLabelDistance];
 }
 
-- (void)cellWithModel:(ProductDetailPageModel *)model andPrice:(NSInteger)price {
+- (void)cellWithModel:(ProductDetailPageModel *)model andPrice:(NSString *)price {
     self.nameLabel.text = model.name;
-    self.priceLabel.text = [NSString stringWithFormat:@"%ld", (long)price];
+//    self.priceLabel.text = price;
+    if (price.integerValue == 0) {
+        self.priceLabel.text = @"该地区暂未销售";
+    } else {
+        self.priceLabel.text = [NSString stringWithFormat:@"%ld", price.integerValue];
+    }
 }
 
 @end

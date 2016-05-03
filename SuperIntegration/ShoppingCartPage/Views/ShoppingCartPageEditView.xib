@@ -32,12 +32,12 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ger-BG-NJT">
-                    <rect key="frame" x="302" y="35" width="60" height="30"/>
+                    <rect key="frame" x="262" y="35" width="100" height="30"/>
                     <color key="backgroundColor" red="0.73725490199999999" green="0.0" blue="0.12549019610000001" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="ger-BG-NJT" secondAttribute="height" multiplier="10:3" id="OHc-HV-5Kx"/>
                         <constraint firstAttribute="height" constant="30" id="Ror-mP-o8B"/>
-                        <constraint firstAttribute="width" constant="60" id="zXa-qY-PP2"/>
+                        <constraint firstAttribute="width" constant="100" id="zXa-qY-PP2"/>
                     </constraints>
                     <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="15"/>
                     <state key="normal" title="删除">
@@ -69,12 +69,13 @@
             <connections>
                 <outlet property="allButton" destination="qgi-04-o2O" id="0Ba-m0-d6c"/>
                 <outlet property="deleteButton" destination="ger-BG-NJT" id="cmF-gV-sUW"/>
+                <outlet property="layout_ButtonWidth" destination="zXa-qY-PP2" id="pyb-bH-LH1"/>
             </connections>
             <point key="canvasLocation" x="383.5" y="453"/>
         </view>
     </objects>
     <resources>
-        <image name="btn" width="13" height="13"/>
+        <image name="btn" width="18" height="18"/>
         <image name="地址管理_08" width="18" height="18"/>
     </resources>
 </document>

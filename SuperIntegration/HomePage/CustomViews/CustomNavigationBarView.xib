@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -13,10 +13,10 @@
             <subviews>
                 <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qMY-8i-n2f">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
-                    <color key="backgroundColor" red="0.9137254901960784" green="0.11764705882352941" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.80000000000000004" green="0.039215686274509803" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PdQ-Cj-dax">
-                    <rect key="frame" x="10" y="25" width="315" height="31"/>
+                    <rect key="frame" x="15" y="25" width="315" height="31"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="31" id="CSe-zb-at0"/>
@@ -38,14 +38,17 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UqX-wp-F54">
-                    <rect key="frame" x="325" y="25" width="50" height="34"/>
+                    <rect key="frame" x="325" y="19" width="50" height="40"/>
                     <constraints>
+                        <constraint firstAttribute="width" constant="50" id="8jV-hT-WgQ"/>
                         <constraint firstAttribute="width" constant="31" id="Axa-oq-Bh8"/>
+                        <constraint firstAttribute="height" constant="40" id="v9n-DH-sJF"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <inset key="titleEdgeInsets" minX="-20" minY="10" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="首页_03">
-                        <color key="titleColor" white="0.12669613486842105" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <inset key="titleEdgeInsets" minX="-16" minY="20" maxX="0.0" maxY="0.0"/>
+                    <inset key="imageEdgeInsets" minX="13" minY="-10" maxX="0.0" maxY="0.0"/>
+                    <state key="normal" title="消息" image="首页_03">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <variation key="default">
                         <mask key="constraints">
@@ -57,7 +60,7 @@
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="0.80000000000000004" green="0.039215686270000001" blue="0.1647058824" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="qMY-8i-n2f" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="2o4-2w-qCo"/>
                 <constraint firstAttribute="trailing" secondItem="qMY-8i-n2f" secondAttribute="trailing" id="9Dq-2z-kED"/>
@@ -65,10 +68,9 @@
                 <constraint firstItem="qMY-8i-n2f" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Ijx-D0-B3A"/>
                 <constraint firstAttribute="bottom" secondItem="PdQ-Cj-dax" secondAttribute="bottom" constant="8" id="KXU-aW-5YN"/>
                 <constraint firstAttribute="bottom" secondItem="qMY-8i-n2f" secondAttribute="bottom" id="Nis-Ax-4Wr"/>
-                <constraint firstItem="UqX-wp-F54" firstAttribute="top" secondItem="PdQ-Cj-dax" secondAttribute="top" id="Vht-EW-IMS"/>
                 <constraint firstItem="UqX-wp-F54" firstAttribute="leading" secondItem="PdQ-Cj-dax" secondAttribute="trailing" id="bpu-on-E2N"/>
                 <constraint firstAttribute="trailing" secondItem="UqX-wp-F54" secondAttribute="trailing" id="fXO-Vd-GDU"/>
-                <constraint firstItem="PdQ-Cj-dax" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="os4-Sn-i4B"/>
+                <constraint firstItem="PdQ-Cj-dax" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="15" id="os4-Sn-i4B"/>
                 <constraint firstAttribute="bottom" secondItem="UqX-wp-F54" secondAttribute="bottom" constant="5" id="xIX-Og-N0l"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
@@ -76,6 +78,7 @@
             <variation key="default">
                 <mask key="constraints">
                     <exclude reference="FZ9-uX-cNq"/>
+                    <exclude reference="bpu-on-E2N"/>
                 </mask>
             </variation>
             <connections>

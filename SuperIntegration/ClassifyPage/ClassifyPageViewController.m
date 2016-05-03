@@ -37,11 +37,12 @@
     /**
      *  子分类
      */
-    NSArray *_subChannelMArray;
+    NSMutableArray *_subChannelMArray;
     /**
      *  子分类的分类
      */
-    NSArray *_keyWorkListArray;
+    NSMutableArray *_keyWorkListArray;
+    NSString *_imageStr;
 }
 
 #pragma mark 注册需要的Identifier
@@ -65,6 +66,8 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
     
     [super viewDidLoad];
     _channelMArray = [NSMutableArray array];
+    _subChannelMArray = [NSMutableArray array];
+    _keyWorkListArray = [NSMutableArray array];
 #pragma mark navSearchButton
     self.searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.searchButton setImage:[UIImage imageNamed:@"首页_06"] forState:UIControlStateNormal];
@@ -90,6 +93,7 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
     [self.collectionView registerNib:[UINib nibWithNibName:@"ClassifyPageBannerCollectionReusableView" bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableClassifyPageCollectionBannerViewIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:@"ClassifyPageCollectionReusableView" bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableClassifyPageCollectionHeaderViewIdentifier];
 #pragma mark 请求数据
+    [JFLoadingView JF_Loading];
     [self getChannelList];
 }
 
@@ -105,7 +109,38 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
 #pragma mark Method
 - (void)getChannelList {
     [[NetworkService sharedInstance] getClassifyPageChannelListSuccess:^(NSMutableArray *responseObject) {
-        _channelMArray = responseObject;
+        _channelMArray = [NSMutableArray arrayWithArray:responseObject];
+        
+        /**
+         *  数据过滤
+         */
+        NSMutableArray *tmpArray = nil;
+        for (ClassifyPageChannelListModel *channelModel in responseObject) {
+            tmpArray = [NSMutableArray arrayWithArray:channelModel.subChannelList];
+            
+            NSLog(@"-----------%@-----------", channelModel.appName);
+            BOOL isRemove = YES;//判断是否删除左边大类
+            for (ClassifyPageSubChannelListModel *subChannelModel in tmpArray) {
+                BOOL isNo = NO;//判断中类里面是否有小类图片
+                for (ClassifyPageKeyWordListModel *keywordModel in subChannelModel.subChannelKeyWordList) {
+                    if (!STR_IS_NIL(keywordModel.keyWordAppPicUrl)) {//最小分类有一个不空最大分类就显示
+                        isNo = YES;//只要有一个小类图片就跳过
+                        break ;
+                    }
+                }
+                if (isNo) {//只要中类里面有一个小类有图片大类就不删除
+                    isRemove = NO;
+//                    break ;
+                } else {//中类里面小类图片一个没有,删除此中类
+                    NSLog(@"%@", subChannelModel.subCahnnelName);
+                    [channelModel.subChannelList removeObject:subChannelModel];
+                }
+            }
+            
+            if (isRemove) {
+                [_channelMArray removeObject:channelModel];
+            }
+        }
         
         [self.tableView reloadData];
         [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0] animated:YES scrollPosition:UITableViewScrollPositionTop];
@@ -113,9 +148,10 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
         ClassifyPageChannelListModel *channelListModel = _channelMArray[0];
         _subChannelMArray = channelListModel.subChannelList;
         [self.collectionView reloadData];
-        
+        [JFLoadingView JF_LoadSuccess];
     } Failure:^(NSError *error) {
-        NSLog(@"%@", error.description);
+        [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@", error.userInfo[@"errmsg"]]];
+        [JFLoadingView JF_LoadSuccess];
     }];
 }
 
@@ -129,11 +165,12 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
         [weakSearchViewSelf removeFromSuperview];
     };
     //return
-    searchView.searchViewReturnClickedBlock = ^(NSArray *searchResultList) {
+    searchView.searchViewReturnClickedBlock = ^(NSInteger keyWordsCateforyId, NSString *keyWords) {
         [weakSearchViewSelf removeFromSuperview];
         
         SearchResultCollectionViewController *searchResultCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"SearchResultCollectionViewController"];
-        searchResultCon.searchResultList = searchResultList;
+        searchResultCon.keyWords = keyWords;
+        searchResultCon.keyWordsCategoryId = keyWordsCateforyId;
         [self.navigationController pushViewController:searchResultCon animated:YES];
     };
 }
@@ -164,7 +201,7 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
     }
     
     ClassifyPageChannelListModel *channelListModel = _channelMArray[indexPath.row];
-    cell.ClassifyPageTableViewCellTitleLabel.text = channelListModel.channelName;
+    cell.ClassifyPageTableViewCellTitleLabel.text = channelListModel.appName;
     
     return cell;
 }
@@ -183,11 +220,14 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
     
     ClassifyPageChannelListModel *channelListModel = _channelMArray[indexPath.row];
     _subChannelMArray = channelListModel.subChannelList;
+    _imageStr = channelListModel.appPicUrl;
+    
+    [self.collectionView setContentOffset:CGPointMake(0, 0) animated:YES];
     [self.collectionView reloadData];
 }
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    [Utility animationForTableViewCell:cell];
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    [Utility animationForTableViewCell:cell];
+//}
 #pragma mark <UICollectionViewDataSource>
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     if (ARRAY_IS_NIL(_subChannelMArray)) {
@@ -200,41 +240,64 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
         return 0;
     }
     ClassifyPageSubChannelListModel *subChannerlModel = _subChannelMArray[section];
-    _keyWorkListArray = subChannerlModel.subChannelKeyWordList;
+    [_keyWorkListArray removeAllObjects];
+    for (ClassifyPageKeyWordListModel *keywordModel in subChannerlModel.subChannelKeyWordList) {
+        if (!STR_IS_NIL(keywordModel.keyWordAppPicUrl)) {
+            [_keyWorkListArray addObject:keywordModel];
+        }
+    }
+//    _keyWorkListArray = subChannerlModel.subChannelKeyWordList;
     return _keyWorkListArray.count;
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     ClassifyPageCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reusableClassifyPageCollectionViewCellIdentifier forIndexPath:indexPath];
+    
     ClassifyPageSubChannelListModel *subChannerlModel = _subChannelMArray[indexPath.section];
-    _keyWorkListArray = subChannerlModel.subChannelKeyWordList;
-    ClassifyPageKeyWordListModel *keyWordModel = _keyWorkListArray[indexPath.item];
-    if (!STR_IS_NIL(keyWordModel.keyWordAppPicUrl)) {
-        [cell.collectionViewCellImageView sd_setImageWithURL:[NSURL URLWithString:keyWordModel.keyWordAppPicUrl] placeholderImage:[UIImage imageNamed:@"place"]];
+    [_keyWorkListArray removeAllObjects];
+    for (ClassifyPageKeyWordListModel *keywordModel in subChannerlModel.subChannelKeyWordList) {
+        if (!STR_IS_NIL(keywordModel.keyWordAppPicUrl)) {
+            [_keyWorkListArray addObject:keywordModel];
+        }
     }
+//    _keyWorkListArray = subChannerlModel.subChannelKeyWordList;
+    ClassifyPageKeyWordListModel *keyWordModel = _keyWorkListArray[indexPath.item];
+    
+    [Utility yanshiWithSeconds:0.01f method:^{
+        if (!STR_IS_NIL(keyWordModel.keyWordAppPicUrl)) {
+            [cell.collectionViewCellImageView sd_setImageWithURL:[NSURL URLWithString:keyWordModel.keyWordAppPicUrl] placeholderImage:[UIImage imageNamed:@"place"]];
+        } else {
+            cell.collectionViewCellImageView.image = [UIImage imageNamed:@"place"];
+        }
+    }];
+    
     cell.collectionViewCellTitleLabel.text = keyWordModel.keyWordName;
     return cell;
 }
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     ClassifyPageSubChannelListModel *subChannerlModel = _subChannelMArray[indexPath.section];
     NSString *titleName = subChannerlModel.subCahnnelName;
-    if (indexPath.section == 0) {
-        ClassifyPageBannerCollectionReusableView *bannerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableClassifyPageCollectionBannerViewIdentifier forIndexPath:indexPath];
-        bannerView.bannerViewTitleLabel.text = titleName;
-        return bannerView;
-    } else {
-        ClassifyPageCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableClassifyPageCollectionHeaderViewIdentifier forIndexPath:indexPath];
-        headerView.headerViewTitleLabel.text = titleName;
-        return headerView;
-    }
+//    if (indexPath.section == 0) {
+//        ClassifyPageBannerCollectionReusableView *bannerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableClassifyPageCollectionBannerViewIdentifier forIndexPath:indexPath];
+//        bannerView.bannerViewTitleLabel.text = titleName;
+//        [bannerView.bannerViewImageView sd_setImageWithURL:[NSURL URLWithString:_imageStr] placeholderImage:[UIImage imageNamed:@"place"]];
+//        return bannerView;
+//    } else {
+//        ClassifyPageCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableClassifyPageCollectionHeaderViewIdentifier forIndexPath:indexPath];
+//        headerView.headerViewTitleLabel.text = titleName;
+//        return headerView;
+//    }
+    ClassifyPageCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableClassifyPageCollectionHeaderViewIdentifier forIndexPath:indexPath];
+    headerView.headerViewTitleLabel.text = titleName;
+    return headerView;
 }
 #pragma mark <UICollectionViewDelegateFlowLayout>
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     return CGSizeMake(ClassifyPageCollectionViewCellWidth, ClassifyPageCollectionViewCellHeight);
 }
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    if (section == 0) {
-        return UIEdgeInsetsMake(ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumInteritem, ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumLine);
-    }
+//    if (section == 0) {
+//        return UIEdgeInsetsMake(ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumInteritem, ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumLine);
+//    }
     return UIEdgeInsetsMake(ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumInteritem, ClassifyPageCollectionViewCellMinimumLine, ClassifyPageCollectionViewCellMinimumLine);
 }
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
@@ -244,9 +307,31 @@ static NSString * const reusableClassifyPageCollectionViewCellIdentifier        
     return ClassifyPageCollectionViewCellMinimumInteritem;
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+//    if (section == 0) {
+//        return CGSizeMake(0, ClassifyPageCollectionViewBannerViewHeight);
+//    }
     if (section == 0) {
-        return CGSizeMake(0, ClassifyPageCollectionViewBannerViewHeight);
+        return CGSizeMake(0, ClassifyPageCollectionViewHeaderViewHeight + 20);
     }
     return CGSizeMake(0, ClassifyPageCollectionViewHeaderViewHeight);
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    ClassifyPageSubChannelListModel *subChannerlModel = _subChannelMArray[indexPath.section];
+    [_keyWorkListArray removeAllObjects];
+    for (ClassifyPageKeyWordListModel *keywordModel in subChannerlModel.subChannelKeyWordList) {
+        if (!STR_IS_NIL(keywordModel.keyWordAppPicUrl)) {
+            [_keyWorkListArray addObject:keywordModel];
+        }
+    }
+//    _keyWorkListArray = subChannerlModel.subChannelKeyWordList;
+    ClassifyPageKeyWordListModel *keyWordModel = _keyWorkListArray[indexPath.item];
+    NSLog(@"%@", keyWordModel.keyWordId);
+    
+    SearchResultCollectionViewController *searchResultCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"SearchResultCollectionViewController"];
+    searchResultCon.keyWords = @"";
+    searchResultCon.searchWords = keyWordModel.keyWordName;
+    searchResultCon.keyWordsCategoryId = keyWordModel.keyWordId.integerValue;
+    [self.navigationController pushViewController:searchResultCon animated:YES];
 }
 @end

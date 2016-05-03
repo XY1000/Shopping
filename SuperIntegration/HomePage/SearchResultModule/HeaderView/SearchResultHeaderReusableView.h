@@ -10,10 +10,8 @@
 
 @interface SearchResultHeaderReusableView : UICollectionReusableView
 
-//查询到的商品数组
-@property (strong, nonatomic) NSArray *searchResultModelArray;
 //价格排序
-@property (copy, nonatomic) void(^block_PriceCompare)(NSArray *compareArray);
+@property (copy, nonatomic) void(^block_PriceCompare)(NSString *sort, NSString *order);
 //筛选
 @property (copy, nonatomic) void (^shaixuanClickedBlock)();
 

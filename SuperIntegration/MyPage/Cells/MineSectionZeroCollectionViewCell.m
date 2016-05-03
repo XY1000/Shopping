@@ -18,8 +18,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *favoriteButton;
 @property (weak, nonatomic) IBOutlet UIButton *footPrintButton;
 @property (weak, nonatomic) IBOutlet UIButton *shareButton;
-@property (weak, nonatomic) IBOutlet UILabel *favoriteLabel;
-@property (weak, nonatomic) IBOutlet UILabel *footPrintLabel;
+
+
 
 
 @property (weak, nonatomic) IBOutlet UIImageView *userImageView;
@@ -43,5 +43,18 @@
     }
     
 }
+
+
+- (IBAction)btn_MyFavoriteClicked:(id)sender {
+    self.block_MyFavorite();
+}
+
+- (IBAction)btn_MyFootPrintClicked:(id)sender {
+    self.block_MyFootPrint();
+}
+
+- (IBAction)btn_SharedClicked:(id)sender {
+}
+
 
 @end

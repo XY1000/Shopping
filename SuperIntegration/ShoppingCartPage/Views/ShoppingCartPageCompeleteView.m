@@ -11,6 +11,7 @@
 
 @interface ShoppingCartPageCompeleteView()
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *layout_ButtonWidth;
 
 @end
 
@@ -19,6 +20,7 @@
 
 - (void)awakeFromNib {
     [self.allButton setSelected:YES];
+    self.layout_ButtonWidth.constant = SCREEN_WIDTH * 100 / 375;
 }
 
 - (void)completeViewContentWithArray:(NSArray *)array {
@@ -31,14 +33,14 @@
         self.completeButton.backgroundColor = RGB(204, 10, 42);
     }
     
-    NSInteger totalPrice = 0;
+    CGFloat totalPrice = 0;
     NSInteger totalAmount = 0;
     for (ShoppingCartPageModel *model in array) {
-        totalPrice += (model.price * model.amount);
+        totalPrice += (model.price.floatValue * model.amount);
         totalAmount += model.amount;
     }
-    [self.totalLabel setText:[NSString stringWithFormat:@"%lu", (long)totalPrice]];
-    [self.completeButton setTitle:[NSString stringWithFormat:@"去结算(%lu)", (long)totalAmount] forState:UIControlStateNormal];
+    [self.totalLabel setText:[NSString stringWithFormat:@"%.2f分", totalPrice]];
+    [self.completeButton setTitle:[NSString stringWithFormat:@"去结算"] forState:UIControlStateNormal];
 }
 - (IBAction)allClicked:(id)sender {
     if (self.allButton.selected) {

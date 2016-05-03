@@ -29,7 +29,9 @@
     
     __weak  UIPageControl *_PageControl;
     
-    NSTimer *_timer;
+//    NSTimer *_timer;
+    dispatch_source_t _timer;
+    __block CGFloat _scrollViewContentX;//滚动内容的x值
     
     NSInteger _currentIndex;
     
@@ -89,9 +91,7 @@
     _imageUrls = imageUrls;
     
     _isHasTimer = YES;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startTimer) name:@"startTimer" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(endTimer) name:@"endTimer" object:nil];
+    _scrollViewContentX = myWidth;
     
     [self prepareScrollView];
     [self setImageData:imageUrls];
@@ -258,11 +258,17 @@
 #pragma mark scrollViewDelegate
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    [self setUpTimer];
+    if (_isHasTimer) {
+        _scrollViewContentX = scrollView.contentOffset.x;
+        [self setUpTimer];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self removeTimer];
+    if (_isHasTimer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -325,12 +331,6 @@
 
 - (void)changeImageLeft:(NSInteger)LeftIndex center:(NSInteger)centerIndex right:(NSInteger)rightIndex {
     
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            
-//        });
-//    });
 //    if (_imageUrls.count < 1) {
 //        _centerImageView.image = [self setImageWithIndex:0];
 //        [Utility yanshiWithSeconds:1.0f method:^{
@@ -345,7 +345,7 @@
         _rightImageView.image = [self setImageWithIndex:rightIndex];
         
         if (_isRefresh) {
-            [Utility yanshiWithSeconds:3.0 method:^{
+            [Utility yanshiWithSeconds:0.5f method:^{
                 _centerImageView.image = [self setImageWithIndex:centerIndex];
                 _isRefresh = NO;
             }];
@@ -381,9 +381,7 @@
 
 
 - (void)scorll {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [_scrollView setContentOffset:CGPointMake(_scrollView.contentOffset.x + myWidth, 0) animated:YES];
-    });
+    [_scrollView setContentOffset:CGPointMake(_scrollView.contentOffset.x + myWidth, 0) animated:YES];
 }
 
 - (void)setAutoScrollDelay:(NSTimeInterval)AutoScrollDelay {
@@ -395,22 +393,39 @@
 - (void)setUpTimer {
     if (_AutoScrollDelay < 0.5) return;
     
-    if ((_timer == nil) && _isHasTimer) {
-        _timer = [NSTimer timerWithTimeInterval:_AutoScrollDelay target:self selector:@selector(scorll) userInfo:nil repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
+    if (_isHasTimer) {
+        if (_timer == nil) {
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+            //每秒执行一次
+            dispatch_source_set_timer(_timer, dispatch_walltime(NULL, 0), _AutoScrollDelay * NSEC_PER_SEC, 0);
+            dispatch_source_set_event_handler(_timer, ^{
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    
+                    if (_scrollViewContentX >= myWidth) {//右滑
+                        [_scrollView setContentOffset:CGPointMake(2 * myWidth, 0) animated:YES];
+                    } else {//左滑
+                        [_scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+                        _scrollViewContentX = myWidth;
+                    }
+                    
+                });
+            });
+            dispatch_resume(_timer);
+        }
     } else {
         return ;
     }
 }
 
 - (void)removeTimer {
-    if (_timer == nil) return;
-    if ((_scrollView.contentOffset.x > myWidth) && (_scrollView.contentOffset.x < myWidth * 2)) {
-        [_scrollView setContentOffset:CGPointMake(myWidth, 0)];
-        [self scorll];
-    }
-    [_timer invalidate];
-    _timer = nil;
+//    if (_timer == nil) return;
+//    if ((_scrollView.contentOffset.x > myWidth) && (_scrollView.contentOffset.x < myWidth * 2)) {
+//        [_scrollView setContentOffset:CGPointMake(myWidth, 0)];
+//        [self scorll];
+//    }
+//    [_timer invalidate];
+//    _timer = nil;
 }
 
 - (void)setImageData:(NSArray *)ImageNames {
@@ -446,9 +461,7 @@
 }
 
 -(void)dealloc {
-    [self removeTimer];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"startTimer" object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"endTimer" object:nil];
+    
 }
 
 /*

@@ -24,7 +24,14 @@
     _listModel = listModel;
     
     _name.text = listModel.contact;
-    _phone.text = listModel.telephone;
+    
+
+    if (!STR_IS_NIL(listModel.telephone)) {
+        self.phone.text = [NSString stringWithFormat:@"%@", [listModel.telephone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];
+    } else {
+        self.phone.text = [NSString stringWithFormat:@"%@", [listModel.phone stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"]];;
+    }
+   
     _address.text = [NSString stringWithFormat:@"%@ %@",listModel.fullAddress,listModel.addressDetail];
     _defaultBtn.selected = listModel.isDefault;
     

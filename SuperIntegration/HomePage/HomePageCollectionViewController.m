@@ -28,10 +28,13 @@
 #import "BaseNavViewController.h"
 #import "IntegralRechargeViewController.h"
 #import "OrderAllListCollectionViewController.h"
+#import "FollowAllListCollectionViewController.h"
+#import "FootPrintAllListCollectionViewController.h"
 //searchView
 #import "SearchView.h"
 //#import "SuperIntegration-Swift.h"
-#import "ProductDetailPageCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
+
 
 @interface HomePageCollectionViewController ()<UICollectionViewDelegateFlowLayout>
 
@@ -57,6 +60,8 @@
     BOOL                    _isAlreadyAssignmentForCellBannerView;
     //轮播图片数组
     NSMutableArray          *_bannerViewImagesMArray;
+    //轮播跳转类型
+    NSMutableArray          *_bannerViewMArray;
     //Section0的图片和title
     NSArray                 *_sectionZeroTitleArray;
     NSArray                 *_sectionZeroImageArray;
@@ -64,10 +69,12 @@
     NSArray                 *_specialMArray;
     //频道列表
     NSArray                 *_channelListArray;
+    //可用的频道列表
+    NSMutableArray          *_valiChannelListArray;
     //猜你喜欢列表
     NSArray                 *_guessYouLikeArray;
     //查询到的用户积分
-    NSInteger       _userIntegral;
+    NSString                *_userIntegral;
 }
 
 #pragma mark 注册需要的Identifier
@@ -84,32 +91,35 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
     self.specialNum = 1;
     self.sectionNum = 7;
-    _bannerViewImagesMArray = [NSMutableArray array];
     _sectionZeroTitleArray = @[@"积分充值", @"我的关注", @"我的足迹", @"我的订单", @"分享有礼"];
     _sectionZeroImageArray = @[@"首页_11", @"首页_13", @"首页_15", @"首页_17", @"首页_20"];
     
     //忽视视图View因为导航栏自动下移64像素
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    [self.collectionView setFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 49)];
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+    [self.collectionView setFrame:CGRectMake(0, 44, SCREEN_WIDTH, SCREEN_HEIGHT - 49 - 44)];
 #pragma mark 注册section的headerView
     // Register header classes
     [self.collectionView registerNib:[UINib nibWithNibName:reusableHeaderViewsIdentifier bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableHeaderViewsIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:reusableGuessHeaderViewsIdentifier bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableGuessHeaderViewsIdentifier];
     
-    [self.collectionView registerNib:[UINib nibWithNibName:reusableSectionGuessIdentifier bundle:nil] forCellWithReuseIdentifier:reusableSectionGuessIdentifier];
+    [self.collectionView registerClass:[PublicOneCollectionViewCell class] forCellWithReuseIdentifier:reusableSectionGuessIdentifier];
 #pragma mark 添加上拉下拉刷新
     //添加下拉刷新
     self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+//        [self.collectionView.mj_footer resetNoMoreData];
         [self.collectionView.mj_header beginRefreshing];
-        [self.collectionView.mj_header endRefreshing];
+        [self getData];
+        
     }];
     //添加上拉刷新
     self.collectionView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
         [self.collectionView.mj_footer beginRefreshing];
-        [self.collectionView.mj_footer endRefreshing];
+        [self getGuessYouLikeList];
     }];
+    self.collectionView.mj_footer.automaticallyHidden = YES;
 #pragma mark 添加自定义的导航栏
     //add navigationBarView
     self.navigationBarView = [[[NSBundle mainBundle] loadNibNamed:@"CustomNavigationBarView" owner:self options:nil] lastObject];
@@ -128,23 +138,22 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
             [weakSearchViewSelf removeFromSuperview];
         };
         //return
-        searchView.searchViewReturnClickedBlock = ^(NSArray *searchResultList) {
+        searchView.searchViewReturnClickedBlock = ^(NSInteger keyWordsCateforyId, NSString *keyWords) {
             [weakSearchViewSelf removeFromSuperview];
             
             SearchResultCollectionViewController *searchResultCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"SearchResultCollectionViewController"];
-            searchResultCon.searchResultList = searchResultList;
+            searchResultCon.searchWords = keyWords;
+            searchResultCon.keyWords = keyWords;
+            searchResultCon.keyWordsCategoryId = keyWordsCateforyId;
             [weakSelf.navigationController pushViewController:searchResultCon animated:YES];
             
         };
-        
-//        SearchResultCollectionViewController *searchResultCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"SearchResultCollectionViewController"];
-//        [weakSelf.navigationController pushViewController:searchResultCon animated:YES];
     };
 #pragma mark 添加回顶部按钮
     //创建回顶部按钮
     self.toTopButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.toTopButton.backgroundColor = RGB(204, 10, 42);
-    self.toTopButton.alpha = 0.8;
+    self.toTopButton.alpha = 0.5;
     [self.toTopButton setFrame:CGRectMake(SCREEN_WIDTH - 70, SCREEN_HEIGHT - 49 - 60, 50, 50)];
 //    [self.toTopButton setTitle:@"回顶" forState:UIControlStateNormal];
     [self.toTopButton setImage:[UIImage imageNamed:@"首页_28"] forState:UIControlStateNormal];
@@ -152,24 +161,27 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
     self.toTopButton.layer.cornerRadius = 25;
     [self.toTopButton addTarget:self action:@selector(toTop) forControlEvents:UIControlEventTouchUpInside];
 #pragma mark 请求数据
-    [self getBannerViewImages];
-    [self getGuessYouLikeList];
+    [self getData];
     
 //    [self login];
 }
 
+- (void)getData {
+    [self getBannerViewImages];
+    [self getGuessYouLikeList];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"startTimer" object:nil];
     //隐藏导航栏
 //    self.navigationController.navigationBar.hidden = YES;
-    //防止隐藏后返回时出现黑色背景
+    self.collectionView.superview.backgroundColor = RGB(241, 72, 108);
+    //防止隐藏后返回时出现背景色
     [self.navigationController setNavigationBarHidden:YES animated:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"endTimer" object:nil];
     //显示导航栏
     [self.navigationController setNavigationBarHidden:NO animated:animated];
 }
@@ -195,8 +207,12 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
  */
 - (void)getBannerViewImages {
     [[NetworkService sharedInstance] getHomePageBannerImagesSuccess:^(NSMutableArray *responseObject) {
+        _bannerViewImagesMArray = [NSMutableArray arrayWithCapacity:responseObject.count];
+        _bannerViewMArray = [NSMutableArray arrayWithCapacity:responseObject.count];
+        [_bannerViewImagesMArray removeAllObjects];
         for (HomePageBannerViewImageModel *imageModel in responseObject) {
             [_bannerViewImagesMArray addObject:imageModel.appPicUrl];
+            [_bannerViewMArray addObject:imageModel];
         }
         [self getSpecialList];
     } Failure:^(NSError *error) {
@@ -211,13 +227,13 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
         _specialMArray = (NSArray *)responseObject;
         HomePageSpecialModel *specialModel = _specialMArray[0];
         NSArray *productList = specialModel.list;
-        if (specialModel.showType != 3) {//显示类型是1,2的 图片少于4张隐藏
-            if (productList.count < 4) {
+        if (specialModel.appType != 3) {//显示类型是1,2的 图片少于4张隐藏
+            if (productList.count < 5) {
                 self.specialNum = 0;
             }
         }
-        if (specialModel.showType == 3) {//同上
-            if (productList.count < 3) {
+        if (specialModel.appType == 3) {//同上
+            if (productList.count < 8) {
                 self.specialNum = 0;
             }
         }
@@ -232,23 +248,26 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
 - (void)getChannelList {
     [[NetworkService sharedInstance] getHomePageChannelListSuccess:^(NSMutableArray *responseObject) {
         _channelListArray = (NSArray *)responseObject;
-        
+        _valiChannelListArray = [NSMutableArray arrayWithCapacity:responseObject.count];
+        self.channelNum = 0;
         for (HomePageChannelListModel *channelListModel in _channelListArray) {
             NSArray *productList = channelListModel.productList;
             if (channelListModel.showType != 3) {//显示类型是1,2的 图片少于4张隐藏
-                if (productList.count >= 4) {
+                if (productList.count >= 5) {
                     self.channelNum += 1;
+                    [_valiChannelListArray addObject:channelListModel];
                 }
             }
             if (channelListModel.showType == 3) {//同上
-                if (productList.count >= 3) {
+                if (productList.count >= 8) {
                     self.channelNum += 1;
+                    [_valiChannelListArray addObject:channelListModel];
                 }
             }
         }
         self.sectionNum = self.specialNum + self.channelNum + 2;
         [self.collectionView reloadData];
-        
+        [self.collectionView.mj_header endRefreshing];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
     }];
@@ -257,15 +276,19 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
  *  猜你喜欢列表
  */
 - (void)getGuessYouLikeList {
-    [[NetworkService sharedInstance] getGuessYouLikeListSuccess:^(NSArray *responseObject) {
-        _guessYouLikeArray = responseObject;
-    } Failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
-    }];
+    [[NetworkService sharedInstance] getGuessYouLikeListChannelId:-1
+                                                           cityId:010
+                                                          Success:^(NSArray *responseObject) {
+                                                              _guessYouLikeArray = responseObject;
+                                                              [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:self.sectionNum - 1]];
+                                                              [self.collectionView.mj_footer endRefreshingWithNoMoreData];
+                                                          } Failure:^(NSError *error) {
+                                                              [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+                                                          }];
 }
 //查询用户积分
 - (void)queryUserIntrgralSuccess:(void(^)())Success {
-    [[NetworkService sharedInstance] getUserQueryIntegralSuccess:^(NSInteger integral) {
+    [[NetworkService sharedInstance] getUserQueryIntegralSuccess:^(NSString *integral) {
         _userIntegral = integral;
         Success();
     } Failure:^(NSError *error) {
@@ -308,24 +331,42 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
             BannerViewCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reusableBannerViewIdentifier forIndexPath:indexPath];
             if (!_isAlreadyAssignmentForCellBannerView) {
                 
-                //            BannerView *bannerView = [BannerView picScrollViewWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, BannerViewHeight) WithImageUrls:UrlStringArray];
                 [cell.bannerView setNowFrame:CGRectMake(0, 0, SCREEN_WIDTH, BannerViewHeight)];
         
                 if (!ARRAY_IS_NIL(_bannerViewImagesMArray)) {
                     [cell.bannerView setImageUrls:_bannerViewImagesMArray];
                     _isAlreadyAssignmentForCellBannerView = YES;
                 }
-                //占位图片,你可以在下载图片失败处修改占位图片
-                
-//                cell.bannerView.placeImage = [UIImage imageNamed:@"place"];
                 
                 //图片被点击事件,当前第几张图片被点击了,和数组顺序一致
                 [cell.bannerView setImageViewDidTapAtIndex:^(NSInteger index) {
-                    printf("第%zd张图片\n",index);
+                    NSLog(@"第%zd张图片\n",index);
+                    HomePageBannerViewImageModel *bannerModel = _bannerViewMArray[index];
+                    if (bannerModel.redirectType.integerValue == 1) {
+                        NSLog(@"详情");
+                        ProductDetailPageViewController *productDetailController = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
+                        productDetailController.productDetailId = bannerModel.detailId;
+                        [self.navigationController showViewController:productDetailController sender:self];
+                    }
+                    if (bannerModel.redirectType.integerValue == 2) {
+                        NSLog(@"搜索");
+                        SearchResultCollectionViewController *searchResultCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"SearchResultCollectionViewController"];
+                        searchResultCon.keyWords = bannerModel.content;
+                        searchResultCon.searchWords = bannerModel.content;
+                        [self.navigationController pushViewController:searchResultCon animated:YES];
+                    }
+                    if (bannerModel.redirectType.integerValue == 3) {
+                        NSLog(@"广告");
+                        return ;
+                    }
+                    if (bannerModel.redirectType.integerValue == 4) {
+                        NSLog(@"频道专页");
+                        return ;
+                    }
                 }];
                 
                 //default is 2.0f,如果小于0.5不自动播放
-                cell.bannerView.AutoScrollDelay = 2.0f;
+                cell.bannerView.AutoScrollDelay = 3.0f;
                 
                 //下载失败重复下载次数,默认不重复,
                 [[BannerWebImageManager shareManager] setDownloadImageRepeatCount:1];
@@ -360,11 +401,11 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
                 if (!ARRAY_IS_NIL(_specialMArray)) {
                     HomePageSpecialModel *specialModel = _specialMArray[0];
                     NSArray *productList = specialModel.list;
-                    [cell.cellWithCustomView drawWithArray:productList andTheShowType:specialModel.showType];
+                    [cell.cellWithCustomView drawWithArray:productList andTheShowType:specialModel.appType];
                 }
             } else {
                 if (!ARRAY_IS_NIL(_channelListArray)) {
-                    HomePageChannelListModel *channelListModel = _channelListArray[indexPath.section - 2];
+                    HomePageChannelListModel *channelListModel = _valiChannelListArray[indexPath.section - 2];
                     NSArray *productList = channelListModel.productList;
                     [cell.cellWithCustomView drawWithArray:productList andTheShowType:channelListModel.showType];
                 }
@@ -372,7 +413,7 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
         }
         if (self.specialNum == 0) {
             if (!ARRAY_IS_NIL(_channelListArray)) {
-                HomePageChannelListModel *channelListModel = _channelListArray[indexPath.section - 1];
+                HomePageChannelListModel *channelListModel = _valiChannelListArray[indexPath.section - 1];
                 NSArray *productList = channelListModel.productList;
                 [cell.cellWithCustomView drawWithArray:productList andTheShowType:channelListModel.showType];
             }
@@ -380,7 +421,7 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
         
         cell.cellWithCustomView.buttonClicked = ^(NSInteger detailId) {
             NSLog(@"%ld", (long)detailId);
-            ProductDetailPageCollectionViewController *productDetailController = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageCollectionViewController"];
+            ProductDetailPageViewController *productDetailController = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
             productDetailController.productDetailId = [NSString stringWithFormat:@"%ld", (long)detailId];
             [self.navigationController showViewController:productDetailController sender:self];
         };
@@ -505,7 +546,19 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
                 [self.navigationController pushViewController:orderAllListCon animated:YES];
             }];
         }
-        if ((indexPath.item == 2) || (indexPath.item == 3) || (indexPath.item == 5)) {
+        if (indexPath.item == 2) {
+            [self judgeIsLoginYes:^{
+                FollowAllListCollectionViewController *followAllListCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"FollowAllListCollectionViewController"];
+                [self.navigationController pushViewController:followAllListCon animated:YES];
+            }];
+        }
+        if (indexPath.item == 3) {
+            [self judgeIsLoginYes:^{
+                FootPrintAllListCollectionViewController *footPrintCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"FootPrintAllListCollectionViewController"];
+                [self.navigationController pushViewController:footPrintCon animated:YES];
+            }];
+        }
+        if ((indexPath.item == 5)) {
             UIAlertController *alertController = [[UIAlertController alloc]
                                                   initAlertWithTitle:@"提示"
                                                   message:@"新功能暂未实现!"
@@ -526,6 +579,12 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
             }];
         }
     }
+    if (indexPath.section == (self.sectionNum - 1)) {
+        GuessYouLikeModel *guessModel = _guessYouLikeArray[indexPath.item];
+        ProductDetailPageViewController *productDetailController = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
+        productDetailController.productDetailId = guessModel.sku;
+        [self.navigationController showViewController:productDetailController sender:self];
+    }
 }
 #pragma mark 根据bannerView的位置开启/关闭循环
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -539,24 +598,24 @@ static NSString * const reusableSectionGuessIdentifier          = @"PublicOneCol
 #pragma mark 根据滑动的距离修改自定义导航栏的透明度 和 回顶部按钮的出现/消失
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     _TheControllercontentOffsetY = scrollView.contentOffset.y;
-    //修改导航栏的透明度
-    if (_TheControllercontentOffsetY < 0) {
-        if (self.navigationBarView.alpha != 0.0) {
-            self.navigationBarView.alpha = 0.0;
-        }
-    }
-    if (_TheControllercontentOffsetY >= 0) {
-        if (self.navigationBarView.alpha != 1.0) {
-            [Utility annimationWithView:self.navigationBarView];
-            self.navigationBarView.alpha = 1.0;
-        }
-    }
-    
-    //修改导航栏背景的透明度
-    if (_TheControllercontentOffsetY <= BannerViewHeight) {
-//        NSLog(@"11 %f", TheControllercontentOffsetY / (BannerViewHeight + BannerViewHeight / 3));
-        self.navigationBarView.backView.alpha = _TheControllercontentOffsetY / (BannerViewHeight + BannerViewHeight / 3);
-    }
+//    //修改导航栏的透明度
+//    if (_TheControllercontentOffsetY < 0) {
+//        if (self.navigationBarView.alpha != 0.0) {
+//            self.navigationBarView.alpha = 0.0;
+//        }
+//    }
+//    if (_TheControllercontentOffsetY >= 0) {
+//        if (self.navigationBarView.alpha != 1.0) {
+//            [Utility annimationWithView:self.navigationBarView];
+//            self.navigationBarView.alpha = 1.0;
+//        }
+//    }
+//    
+//    //修改导航栏背景的透明度
+//    if (_TheControllercontentOffsetY <= BannerViewHeight) {
+////        NSLog(@"11 %f", TheControllercontentOffsetY / (BannerViewHeight + BannerViewHeight / 3));
+//        self.navigationBarView.backView.alpha = _TheControllercontentOffsetY / (BannerViewHeight + BannerViewHeight / 3);
+//    }
     //如果滑动的距离大于设备屏幕的一半就添加返回顶部按钮
     if (_TheControllercontentOffsetY >= SCREEN_HEIGHT / 2) {
         if (self.toTopButton.superview == nil) {

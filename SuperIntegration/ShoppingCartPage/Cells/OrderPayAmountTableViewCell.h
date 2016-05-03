@@ -10,6 +10,6 @@
 
 @interface OrderPayAmountTableViewCell : UITableViewCell
 
-- (void)cellWithProductPrice:(NSString *)productPrice roadPrice:(NSString *)roadPrice;
+- (void)cellWithProductPrice:(NSString *)productPrice roadPrice:(CGFloat)roadPrice;
 
 @end

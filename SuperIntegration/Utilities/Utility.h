@@ -10,6 +10,7 @@
 
 @interface Utility : NSObject
 
+#pragma mark 正则表达式
 /**
  *  检查用户的身份证号码
  */
@@ -26,6 +27,11 @@
  *  邮箱
  */
 + (BOOL)validateEmail:(NSString *)email;
+/**
+ *  6-20位字母数字密码
+ */
++ (BOOL)evaluateWithPassword:(NSString *)password;
+
 /**
  *  16进制颜色转换为UIColor
  */
@@ -107,4 +113,11 @@
  *  清除缓存
  */
 + (void)releaseCache;
+/**
+ *  textField字距左边距
+ *
+ *  @param textField textField
+ *  @param leftWidth 距离
+ */
++(void)setTextFieldLeftPadding:(UITextField *)textField forWidth:(CGFloat)leftWidth;
 @end

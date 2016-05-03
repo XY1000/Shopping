@@ -14,6 +14,6 @@
 //点击取消
 @property (copy, nonatomic) void(^searchViewCancelClickedBlock)();
 //点击return
-@property (copy, nonatomic) void(^searchViewReturnClickedBlock)(NSArray *searchResultList);
+@property (copy, nonatomic) void(^searchViewReturnClickedBlock)(NSInteger keyWordsCateforyId, NSString *keyWords);
 
 @end

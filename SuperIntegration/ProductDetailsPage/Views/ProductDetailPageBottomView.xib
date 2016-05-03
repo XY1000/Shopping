@@ -43,6 +43,7 @@
                             <state key="normal" title="关注" image="商品详情页面_19">
                                 <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
+                            <state key="selected" title="已关注"/>
                             <connections>
                                 <action selector="favoriteClicked:" destination="zSQ-TK-bRd" eventType="touchUpInside" id="JJO-TA-OZI"/>
                             </connections>

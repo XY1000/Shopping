@@ -38,80 +38,82 @@
     }
     
     if (theShowType != 3) {
-        if (theShowType == 1) {
-            SpecialShoppingItem0With = HMC_TypeOneCellWith;
-        }
-        if (theShowType == 2) {
-            SpecialShoppingItem0With = HMC_TypeTwoCellWith;
-        }
-        SpecialShoppingItem1With = SCREEN_WIDTH - SpecialShoppingItem0With - 1;
-        SpecialShoppingItem2With = (SpecialShoppingItem1With - 1) / 2;
-        
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
             if (ARRAY_IS_NIL(imageMArray)) {
                 [button setBackgroundImage:[UIImage imageNamed:@"place"] forState:UIControlStateNormal];
             } else {
-                [button sd_setBackgroundImageWithURL:[NSURL URLWithString:imageMArray[i]] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"place"]];
-                
+                [Utility yanshiWithSeconds:0.1 method:^{
+                    [button sd_setBackgroundImageWithURL:[NSURL URLWithString:imageMArray[i]] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"place"]];
+                }];
             }
-            [button setBackgroundColor:[UIColor whiteColor]];
-            
             HomePageModel *model = Array[i];
             button.tag = [model.detailId integerValue];
             
             [button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-            //重新定位cell的位置
-            if (i == 0) {
-                [button setFrame:CGRectMake(0, 0, SpecialShoppingItem0With, SpecialShoppingItem0Height)];
-                originYForSection1 = button.frame.origin.y;
-                originXForSection1 = button.frame.size.width;
-            } else if (i == 1) {
-                [button setFrame:CGRectMake(originXForSection1 + 1, originYForSection1, SpecialShoppingItem1With, SpecialShoppingItem1Height)];
-                originYForSection1 = button.frame.origin.y + button.frame.size.height;
-            } else if (i == 2) {
-                [button setFrame:CGRectMake(originXForSection1 + 1, originYForSection1 + 1, SpecialShoppingItem2With, SpecialShoppingItem2Height)];
-                originXForSection1 = button.frame.origin.x + button.frame.size.width;
-            } else {
-                [button setFrame:CGRectMake(originXForSection1 + 1, originYForSection1 + 1, SpecialShoppingItem2With, SpecialShoppingItem2Height)];
+            
+            if (theShowType == 1) {
+                if (i == 0) {
+                    [button setFrame:CGRectMake(0, 0, SpecialShoppingItem0Height, SpecialShoppingItem0Height)];
+                }
+                if (i == 1) {
+                    [button setFrame:CGRectMake(SpecialShoppingItem0Height + 1, 0, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2)];
+                }
+                if (i == 2) {
+                    [button setFrame:CGRectMake(SpecialShoppingItem0Height + (SCREEN_WIDTH - SpecialShoppingItem0Height)/2 + 1, 0, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2)];
+                }
+                if (i == 3) {
+                    [button setFrame:CGRectMake(SpecialShoppingItem0Height + 1, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2 + 1, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2)];
+                }
+                if (i == 4) {
+                    [button setFrame:CGRectMake(SpecialShoppingItem0Height + (SCREEN_WIDTH - SpecialShoppingItem0Height)/2 + 1, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2 + 1, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2, (SCREEN_WIDTH - SpecialShoppingItem0Height)/2)];
+                }
+            }
+            if (theShowType == 2) {
+                if (i == 0) {
+                    [button setFrame:CGRectMake(0, 0, (SpecialShoppingItem0Height - 1)/2, (SpecialShoppingItem0Height - 1)/2)];
+                }
+                if (i == 1) {
+                    [button setFrame:CGRectMake((SpecialShoppingItem0Height - 1)/2 + 1, 0, (SpecialShoppingItem0Height - 1)/2, (SpecialShoppingItem0Height - 1)/2)];
+                }
+                if (i == 2) {
+                    [button setFrame:CGRectMake(0, (SpecialShoppingItem0Height - 1)/2 + 1, (SpecialShoppingItem0Height - 1)/2, (SpecialShoppingItem0Height - 1)/2)];
+                }
+                if (i == 3) {
+                    [button setFrame:CGRectMake((SpecialShoppingItem0Height - 1)/2 + 1, (SpecialShoppingItem0Height - 1)/2 + 1, (SpecialShoppingItem0Height - 1)/2, (SpecialShoppingItem0Height - 1)/2)];
+                }
+                if (i == 4) {
+                    [button setFrame:CGRectMake(SpecialShoppingItem0Height + 1, 0, SpecialShoppingItem0Height, SpecialShoppingItem0Height)];
+                }
             }
             [self addSubview:button];
         }
-        
     }
-    
     if (theShowType == 3) {
-        SpecialShoppingItem1With = HMC_TypeThreeCellWith;
-        SpecialShoppingItem0With = (SCREEN_WIDTH - SpecialShoppingItem1With) / 2;
-        SpecialShoppingItem2With = SpecialShoppingItem0With;
         
-        for (int i = 0; i < 3; i++) {
+        CGFloat butWidth = (SpecialShoppingItem0Height - 1)/2;
+        
+        for (int i = 0; i < 8; i++) {
             UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
             if (ARRAY_IS_NIL(imageMArray)) {
                 [button setBackgroundImage:[UIImage imageNamed:@"place"] forState:UIControlStateNormal];
             } else {
-                [button sd_setBackgroundImageWithURL:[NSURL URLWithString:imageMArray[i]] forState:UIControlStateNormal];
+                [Utility yanshiWithSeconds:0.1 method:^{
+                    [button sd_setBackgroundImageWithURL:[NSURL URLWithString:imageMArray[i]] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"place"]];
+                }];
             }
-            [button setBackgroundColor:[UIColor whiteColor]];
-            
             HomePageModel *model = Array[i];
             button.tag = [model.detailId integerValue];
             
             [button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-            //重新定位cell的位置
-            if (i == 0) {
-                [button setFrame:CGRectMake(0, 0, SpecialShoppingItem0With, SpecialShoppingItem0Height)];
-                originXForSection1 = button.frame.size.width;
-            } else if (i == 1) {
-                [button setFrame:CGRectMake(originXForSection1, 0, SpecialShoppingItem1With, SpecialShoppingItem0Height)];
-                originXForSection1 = button.frame.origin.x + button.frame.size.width;
-            } else if (i == 2) {
-                [button setFrame:CGRectMake(originXForSection1, 0, SpecialShoppingItem2With, SpecialShoppingItem0Height)];
-            }
+            
+            
+            
+            [button setFrame:CGRectMake(i%4 * (butWidth+1), i/4 * (butWidth+1), butWidth, butWidth)];
+            
             [self addSubview:button];
         }
     }
-    
     
 }
 

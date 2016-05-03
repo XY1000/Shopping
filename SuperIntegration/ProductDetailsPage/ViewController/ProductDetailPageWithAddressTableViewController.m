@@ -119,7 +119,7 @@ typedef enum{
 }
 #pragma mark  Method
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    if ([change[@"new"] integerValue] != 0) {
+    if ([change[@"new"] integerValue] != addressType_provice) {
         self.backButton.hidden = NO;
     } else {
         self.backButton.hidden = YES;

@@ -65,7 +65,7 @@
     
     [super viewWillAppear:animated];
 
-    self.lb_email.text = _model.emailStatus ? @"未验证":@"已验证";
+    self.lb_email.text = _model.emailStatus ? @"已验证":@"未验证";
 }
 
 
@@ -73,9 +73,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    if (indexPath.row != 3) {
-        [SVProgressHUD showErrorWithStatus:@"该功能暂未实现"];
-    }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     

@@ -142,7 +142,7 @@
     UIView *keyBoardView = [[UIView alloc] initWithFrame:CGRectMake( 0, SCREEN_HEIGHT - (KEYBTN_HEIGHT * 4 + INERVAL_HEIGHT * 3) ,SCREEN_WIDTH, KEYBTN_HEIGHT * 4 + INERVAL_HEIGHT * 3)];
     
     keyBoardView.backgroundColor = [UIColor lightGrayColor];
-    
+   
     //每个按键的宽度
     CGFloat btnW = (SCREEN_WIDTH - 2 * INERVAL_WIDTH) / 3.0;
     

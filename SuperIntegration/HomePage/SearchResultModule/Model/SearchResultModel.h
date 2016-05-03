@@ -11,6 +11,10 @@
 @interface SearchResultModel : BaseModel
 
 /**
+ *  关注id
+ */
+@property (assign, nonatomic) NSInteger id;
+/**
  *  sku
  */
 @property (copy, nonatomic) NSString *sku;
@@ -25,7 +29,12 @@
 /**
  *  积分价格
  */
-@property (assign, nonatomic) NSInteger price;
+@property (copy, nonatomic) NSString *price;
+
+@property (copy, nonatomic) NSString *amount;
+
+//缓存的图片
+@property (strong, nonatomic) UIImage *clipedImage;
 
 + (SearchResultModel *)modelWithDic:(NSDictionary *)dic;
 

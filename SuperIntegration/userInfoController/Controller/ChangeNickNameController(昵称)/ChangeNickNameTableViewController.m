@@ -47,31 +47,39 @@
 
 - (void)rightBtnClick:(UIButton *)sender{
     
-    if (self.txt_nick.text.length >= 2 && self.txt_nick.text.length <= 10) {
+    if (self.txt_nick.text.length >= 1 && self.txt_nick.text.length <= 20) {
         
         
         
         DLog(@"nickName = %@",_model.nickname);
         
+        NSString *regex = @"^[a-zA-Z0-9\u4e00-\u9fa5]+$";
+        NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+        if (![pred evaluateWithObject:self.txt_nick.text]) {
+            [SVProgressHUD showErrorWithStatus:@"昵称只能由中文、字母或数字组成"];
+        } else {
+            [[NetworkService sharedInstance] putUserChangeInformationWithRealName:_model.realname NickName:self.txt_nick.text Sex:_model.sex Success:^{
+                //为了协同工作
+                SetObjectUserDefault(self.txt_nick.text, @"nickname");
+                
+                _model.nickname = self.txt_nick.text;
+                [self.navigationController popViewControllerAnimated:YES];
+                
+            } Failure:^(NSError *error) {
+                
+                [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+                
+            }];
+        }
         
         
         
-        [[NetworkService sharedInstance] putUserChangeInformationWithRealName:_model.realname NickName:self.txt_nick.text Sex:_model.sex Success:^{
-            
-            _model.nickname = self.txt_nick.text;
-            [self.navigationController popViewControllerAnimated:YES];
-            
-        } Failure:^(NSError *error) {
-            
-            [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
-            
-        }];
         
         
         
     }else{
         
-        [SVProgressHUD showErrorWithStatus:@"请输入2 - 10位"];
+        [SVProgressHUD showErrorWithStatus:@"请输入1 - 20位"];
         
     }
     
@@ -94,7 +102,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
     
-    NSString *str = @"2-10个字符";
+    NSString *str = @"1 - 20个字符";
     
     return str;
     
@@ -103,11 +111,11 @@
 - (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section{
     
     view.tintColor = self.view.backgroundColor;
-    
+   
     UITableViewHeaderFooterView *foot = (UITableViewHeaderFooterView *)view;
     foot.textLabel.textColor = [UIColor lightGrayColor];
     
-
+    foot.textLabel.font = [UIFont systemFontOfSize:13];
 }
 
 

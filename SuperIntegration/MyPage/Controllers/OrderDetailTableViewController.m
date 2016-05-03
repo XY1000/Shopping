@@ -20,7 +20,7 @@
 //view
 #import "OrderDetailBottomView.h"
 //controller
-#import "ProductDetailPageCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
 
 @interface OrderDetailTableViewController ()
 {
@@ -148,7 +148,8 @@ static NSString * const reusablePaidAmountCellIdentifier                = @"Orde
     }
     if (indexPath.section == 5) {
         OrderPayAmountTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reusablePayAmountCellIdentifier forIndexPath:indexPath];
-        [cell cellWithProductPrice:self.orderPaidAmount roadPrice:@"0"];
+        OrderDetailModel *model = _orderDetailArray[0];
+        [cell cellWithProductPrice:self.orderPaidAmount roadPrice:model.freight];
         return cell;
     }
     if (indexPath.section == 6) {
@@ -169,7 +170,7 @@ static NSString * const reusablePaidAmountCellIdentifier                = @"Orde
     if ((indexPath.section == 4) || (indexPath.section == 6)) {
         return 40;
     }
-    return 90;
+    return 80;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -197,7 +198,7 @@ static NSString * const reusablePaidAmountCellIdentifier                = @"Orde
         OrderDetailModel *model = _orderDetailArray[0];
         NSArray *productListArray = model.productList;
         OrderDetailModelProductList *productModel = productListArray[indexPath.row];
-        ProductDetailPageCollectionViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageCollectionViewController"];
+        ProductDetailPageViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
         productDetailCon.productDetailId = productModel.sku;
         [self.navigationController pushViewController:productDetailCon animated:YES];
     }

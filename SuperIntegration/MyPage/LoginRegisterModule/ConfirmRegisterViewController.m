@@ -26,7 +26,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.accountNumberTextField.delegate = self;
+//    self.accountNumberTextField.delegate = self;
+    self.accountNumberTextField.text = self.phone;
+    self.accountNumberTextField.enabled = NO;
     self.realNameTextField.delegate = self;
     self.sexTextField.delegate = self;
     self.passwordTextField.delegate = self;
@@ -49,12 +51,12 @@
         [SVProgressHUD showErrorWithStatus:@"请输入确认密码"];
         return;
     }
-    if (((self.passwordTextField.text.length < 6) || (self.passwordTextField.text.length > 20)) || ((self.confirmPasswordTextField.text.length < 6) || (self.confirmPasswordTextField.text.length > 20))) {
-        [SVProgressHUD showErrorWithStatus:@"密码为6-20位字母和数字的组合"];
-        return;
-    }
     if (![self.passwordTextField.text isEqualToString:self.confirmPasswordTextField.text]) {
         [SVProgressHUD showErrorWithStatus:@"两次输入密码不一致"];
+        return;
+    }
+    if (![Utility evaluateWithPassword:self.passwordTextField.text]) {
+        [SVProgressHUD showErrorWithStatus:@"密码为6-20位字母和数字的组合"];
         return;
     }
     [[NetworkService sharedInstance] postUserRegisterInformationWithPhone:self.accountNumberTextField.text

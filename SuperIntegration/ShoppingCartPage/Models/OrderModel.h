@@ -25,7 +25,7 @@
 /**
  *  订单价格
  */
-@property (assign, nonatomic) NSInteger orderAmount;
+@property (copy, nonatomic) NSString *orderAmount;
 /**
  *  订单状态
  */
@@ -59,7 +59,7 @@
 /**
  *  价格
  */
-@property (assign, nonatomic) NSInteger amount;
+@property (copy, nonatomic) NSString *amount;
 /**
  *  数量
  */
@@ -105,15 +105,20 @@
 /**
  *  订单价格
  */
-@property (assign, nonatomic) NSInteger orderAmount;
+@property (copy, nonatomic) NSString *orderAmount;
 /**
  *  手机号
  */
 @property (copy, nonatomic) NSString *telephone;
+@property (copy, nonatomic) NSString *phone;
 /**
  *  产品列表
  */
 @property (strong, nonatomic) NSArray *productList;
+/**
+ *  运费
+ */
+@property (assign, nonatomic) CGFloat freight;
 
 + (OrderDetailModel *)modelWithDic:(NSDictionary *)dic;
 @end
@@ -131,7 +136,7 @@
 /**
  *  积分价格
  */
-@property (assign, nonatomic) NSInteger amount;
+@property (copy, nonatomic) NSString *amount;
 /**
  *  产品数量
  */

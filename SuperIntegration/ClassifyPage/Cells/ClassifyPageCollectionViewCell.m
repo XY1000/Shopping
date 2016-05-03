@@ -10,4 +10,9 @@
 
 @implementation ClassifyPageCollectionViewCell
 
+- (void)awakeFromNib {
+    self.collectionViewCellImageView.layer.borderWidth = 0.5;
+    self.collectionViewCellImageView.layer.borderColor = RGB(244, 245, 246).CGColor;
+}
+
 @end

@@ -23,7 +23,11 @@
 @property (weak, nonatomic) IBOutlet UIButton *selectButton;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *txt_LayoutWidth_Input;
 
+//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *layout_PriceTopTitle;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *layout_ImageWidth;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *labelBottomToImageLayoutConstraint;
 
+@property (assign, nonatomic) NSInteger textInteger;
 @property (assign, nonatomic) CellType cellType;
 
 @end
@@ -32,7 +36,9 @@
 
 - (void)awakeFromNib {
     
-    self.txt_LayoutWidth_Input.constant = SCREEN_WIDTH * 240 / (375 * 2);
+    self.txt_LayoutWidth_Input.constant = SCREEN_WIDTH * 200 / (375 * 2);
+    [self.labelBottomToImageLayoutConstraint setConstant:-PublicZeroCellLabelValue];
+    self.layout_ImageWidth.constant = (PublicZeroCellHeight - 20);
     
     self.textField.delegate = self;
     self.textField.leftViewMode = UITextFieldViewModeAlways;
@@ -40,38 +46,80 @@
     self.textField.text = @"1";
     
     UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [leftButton setFrame:CGRectMake(0, 0, 30, self.textField.frame.size.height)];
+    [leftButton setFrame:CGRectMake(0, 0, 25, self.textField.frame.size.height)];
     [leftButton setBackgroundImage:[UIImage imageNamed:@"减号"] forState:UIControlStateNormal];
     self.textField.leftView = leftButton;
     leftButton.tag = 1;
     [leftButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightButton setFrame:CGRectMake(0, 0, 30, self.textField.frame.size.height)];
+    [rightButton setFrame:CGRectMake(0, 0, 25, self.textField.frame.size.height)];
     [rightButton setBackgroundImage:[UIImage imageNamed:@"积分兑换_11"] forState:UIControlStateNormal];
     self.textField.rightView = rightButton;
     rightButton.tag = 2;
     [rightButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
+    NSLog(@"开始编辑");
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 40)];
+    view.backgroundColor = [UIColor whiteColor];
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setTitle:@"完成" forState:UIControlStateNormal];
+    [button setTitleColor:RGB(204, 10, 42) forState:UIControlStateNormal];
+    [button setFrame:CGRectMake(SCREEN_WIDTH - 95, 0, 80, 40)];
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [button addTarget:self action:@selector(btn_CommitClicked) forControlEvents:UIControlEventTouchUpInside];
+    [view addSubview:button];
+    
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, view.frame.size.height - 0.5, SCREEN_WIDTH, 0.5)];
+    lineView.backgroundColor = [UIColor lightGrayColor];
+    [view addSubview:lineView];
+    
+    self.textField.inputAccessoryView = view;
+    
+    
 }
 
 //数量加减
 - (void)buttonClicked:(UIButton *)button {
-    NSInteger textInteger = self.textField.text.integerValue;
+    _textInteger = self.textField.text.integerValue;
     if (button.tag == 1) {
-        if (textInteger > 1) {
-            textInteger -= 1;
+        if (self.textInteger > 1) {
+            _textInteger -= 1;
         }
     }
     if (button.tag == 2) {
-        textInteger += 1;
+        if (self.textInteger < 99) {
+            _textInteger += 1;
+        } else {
+            [SVProgressHUD showErrorWithStatus:@"最多只能买99件哦!"];
+        }
+    }
+
+    for (ShoppingCartPageModel *model in [ShoppingCartManager sharedInstance].allMArray) {
+        if (_cartModel.id == model.id) {
+            model.amount = self.textInteger;
+        }
     }
     
-    [self inventoryProductWithSku:_cartModel.sku num:textInteger success:^{
-        self.updateClickedBlock(_cartModel.id, textInteger);
-        self.textField.text = [NSString stringWithFormat:@"%lu", (long)textInteger];
-    }];
+    /**
+     *  定时0.5s
+     */
+    self.textField.text = [NSString stringWithFormat:@"%lu", (long)self.textInteger];
+    
+    [[self class] cancelPreviousPerformRequestsWithTarget:self selector:@selector(update) object:button];
+    [self performSelector:@selector(update) withObject:button afterDelay:0.3];
+    
+
+//    [self inventoryProductWithSku:_cartModel.sku num:textInteger success:^{
+//        self.updateClickedBlock(_cartModel.id, textInteger);
+//        self.textField.text = [NSString stringWithFormat:@"%lu", (long)textInteger];
+//    }];
 }
+- (void)update {
+    self.updateClickedBlock(_cartModel.id, self.textInteger);
+}
+
 
 //查询商品库存
 - (void)inventoryProductWithSku:(NSString *)Sku num:(NSInteger)Num success:(void(^)())Success{
@@ -124,7 +172,7 @@
 
     [self.imageView sd_setImageWithURL:[NSURL URLWithString:model.image] placeholderImage:[UIImage imageNamed:@"place"]];
     self.titleLabel.text = model.name;
-    self.priceLabel.text = [NSString stringWithFormat:@"%lu", (long)model.price];
+    self.priceLabel.text = model.price;
     self.textField.text = [NSString stringWithFormat:@"%lu", (long)model.amount];
     _cartModel = model;
     
@@ -150,33 +198,21 @@
 #pragma mark <UITextFieldDelegate>
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    NSLog(@"开始编辑");
-    _lastText = textField.text;
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 40)];
-    view.backgroundColor = [UIColor whiteColor];
-    
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    [button setTitle:@"完成" forState:UIControlStateNormal];
-    [button setTitleColor:RGB(204, 10, 42) forState:UIControlStateNormal];
-    [button setFrame:CGRectMake(SCREEN_WIDTH - 95, 0, 80, 40)];
-    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    [button addTarget:self action:@selector(btn_CommitClicked) forControlEvents:UIControlEventTouchUpInside];
-    [view addSubview:button];
-    
-    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, view.frame.size.height - 0.5, SCREEN_WIDTH, 0.5)];
-    lineView.backgroundColor = [UIColor lightGrayColor];
-    [view addSubview:lineView];
-    
-    self.textField.inputAccessoryView = view;
+    _lastText = self.textField.text;
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(textFieldDidChange:) name:UITextFieldTextDidChangeNotification object:self.textField];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+//    NSLog(@"end");
+    [self btn_CommitClicked];
 }
 
 - (void)textFieldDidChange:(NSNotification *)note
 {
     NSLog(@"%@", self.textField.text);
-    if ([self.textField.text integerValue] > 200) {
-        [SVProgressHUD showErrorWithStatus:@"最多只能买200件哦!"];
-        self.textField.text = @"200";
+    if ([self.textField.text integerValue] > 99) {
+        [SVProgressHUD showErrorWithStatus:@"最多只能买99件哦!"];
+        self.textField.text = @"99";
     }
 }
 
@@ -184,9 +220,15 @@
     if ([self.textField.text integerValue] == 0) {
         self.textField.text = _lastText;
     } else {
-        [self inventoryProductWithSku:_cartModel.sku num:self.textField.text.integerValue success:^{
-            self.updateClickedBlock(_cartModel.id, self.textField.text.integerValue);
-        }];
+        for (ShoppingCartPageModel *model in [ShoppingCartManager sharedInstance].allMArray) {
+            if (_cartModel.id == model.id) {
+                model.amount = self.textField.text.integerValue;
+            }
+        }
+        self.updateClickedBlock(_cartModel.id, self.textField.text.integerValue);
+//        [self inventoryProductWithSku:_cartModel.sku num:self.textField.text.integerValue success:^{
+//            self.updateClickedBlock(_cartModel.id, self.textField.text.integerValue);
+//        }];
     }
     [self.textField resignFirstResponder];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UITextFieldTextDidChangeNotification object:self.textField];

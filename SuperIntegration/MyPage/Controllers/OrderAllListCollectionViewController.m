@@ -16,11 +16,13 @@
 #import "OrderAllListFooterCollectionReusableView.h"
 //controller
 #import "OrderDetailTableViewController.h"
-#import "ProductDetailPageCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
 
 @interface OrderAllListCollectionViewController ()<UICollectionViewDelegateFlowLayout>
 {
-    NSArray *_orderListArray;
+    NSMutableArray      *_orderListArray;
+    NSInteger           _page;
+    NSInteger           _rows;
 }
 
 @end
@@ -33,9 +35,58 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self.collectionView registerNib:[UINib nibWithNibName:reusableCellIdentifier bundle:nil] forCellWithReuseIdentifier:reusableCellIdentifier];
-    
+    _page = 1;
+    _rows = 16;
+    _orderListArray = [NSMutableArray array];
+    [self.collectionView registerClass:[PublicZeroCollectionViewCell class] forCellWithReuseIdentifier:reusableCellIdentifier];
+#pragma mark 添加上拉下拉刷新
+    //添加下拉刷新
+    self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        _page = 1;
+        [self.collectionView.mj_footer resetNoMoreData];
+        [self.collectionView.mj_header beginRefreshing];
+        if (self.orderType == allOrderList) {
+            [self getAllOrderList];
+        }
+        if (self.orderType == unPayOrderList) {
+            [self getUnPayOrderList];
+        }
+        if (self.orderType == unSendOrderList) {
+            [self getUnSendOrderList];
+        }
+        if (self.orderType == unReceiveOrderList) {
+            [self getUnReceiveOrderList];
+        }
+        
+    }];
+    //添加上拉刷新
+    self.collectionView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        _page += 1;
+        [self.collectionView.mj_footer beginRefreshing];
+        if (self.orderType == allOrderList) {
+            [self getAllOrderList];
+        }
+        if (self.orderType == unPayOrderList) {
+            [self getUnPayOrderList];
+        }
+        if (self.orderType == unSendOrderList) {
+            [self getUnSendOrderList];
+        }
+        if (self.orderType == unReceiveOrderList) {
+            [self getUnReceiveOrderList];
+        }
+    }];
+    self.collectionView.mj_footer.automaticallyHidden = YES;
+    // Do any additional setup after loading the view.
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     if (self.orderType == allOrderList) {
         self.title = @"全部订单";
         [self getAllOrderList];
@@ -52,21 +103,25 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
         self.title = @"待收货订单";
         [self getUnReceiveOrderList];
     }
-
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
 #pragma mark 请求数据
 //全部订单
 - (void)getAllOrderList {
-    [[NetworkService sharedInstance] getOrderAllWithRows:50 Page:1 Success:^(NSArray *responseObject) {
-        _orderListArray = responseObject;
+    [[NetworkService sharedInstance] getOrderAllWithRows:_rows Page:_page Success:^(NSArray *responseObject) {
+        if (_page == 1) {
+            [_orderListArray removeAllObjects];
+            _orderListArray = (NSMutableArray *)responseObject;
+        } else {
+            [_orderListArray addObjectsFromArray:responseObject];
+            if (ARRAY_IS_NIL(responseObject)) {
+                [self.collectionView.mj_footer endRefreshingWithNoMoreData];
+            } else {
+                [self.collectionView.mj_footer endRefreshing];
+            }
+        }
+        [self.collectionView.mj_header endRefreshing];
         [self.collectionView reloadData];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
@@ -74,8 +129,19 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
 }
 //未支付订单
 - (void)getUnPayOrderList {
-    [[NetworkService sharedInstance] getOrderUnpayWithRows:50 Page:1 Success:^(NSArray *responseObject) {
-        _orderListArray = responseObject;
+    [[NetworkService sharedInstance] getOrderUnpayWithRows:_rows Page:_page Success:^(NSArray *responseObject) {
+        if (_page == 1) {
+            [_orderListArray removeAllObjects];
+            _orderListArray = (NSMutableArray *)responseObject;
+        } else {
+            [_orderListArray addObjectsFromArray:responseObject];
+            if (ARRAY_IS_NIL(responseObject)) {
+                [self.collectionView.mj_footer endRefreshingWithNoMoreData];
+            } else {
+                [self.collectionView.mj_footer endRefreshing];
+            }
+        }
+        [self.collectionView.mj_header endRefreshing];
         [self.collectionView reloadData];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
@@ -83,8 +149,19 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
 }
 //待发货订单
 - (void)getUnSendOrderList {
-    [[NetworkService sharedInstance] getOrderUnSendWithRows:50 Page:1 Success:^(NSArray *responseObject) {
-        _orderListArray = responseObject;
+    [[NetworkService sharedInstance] getOrderUnSendWithRows:_rows Page:_page Success:^(NSArray *responseObject) {
+        if (_page == 1) {
+            [_orderListArray removeAllObjects];
+            _orderListArray = (NSMutableArray *)responseObject;
+        } else {
+            [_orderListArray addObjectsFromArray:responseObject];
+            if (ARRAY_IS_NIL(responseObject)) {
+                [self.collectionView.mj_footer endRefreshingWithNoMoreData];
+            } else {
+                [self.collectionView.mj_footer endRefreshing];
+            }
+        }
+        [self.collectionView.mj_header endRefreshing];
         [self.collectionView reloadData];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
@@ -138,7 +215,7 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
             orderDetailCon.orderNumber = orderNumber;
             orderDetailCon.orderState = orderState;
             OrderModel *model = _orderListArray[indexPath.section];
-            orderDetailCon.orderPaidAmount = [NSString stringWithFormat:@"%ld",(long)model.orderAmount];
+            orderDetailCon.orderPaidAmount = model.orderAmount;
             [self.navigationController pushViewController:orderDetailCon animated:YES];
         };
         
@@ -180,7 +257,7 @@ static NSString * const reusableFooterViewIdentifier        = @"OrderAllListFoot
     OrderModel *model = _orderListArray[indexPath.section];
     NSArray *productListArray = model.productList;
     OrderModelProductList *productModel = productListArray[indexPath.item];
-    ProductDetailPageCollectionViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageCollectionViewController"];
+    ProductDetailPageViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
     productDetailCon.productDetailId = productModel.sku;
     [self.navigationController pushViewController:productDetailCon animated:YES];
 }

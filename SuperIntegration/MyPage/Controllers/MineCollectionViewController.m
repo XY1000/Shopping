@@ -7,13 +7,16 @@
 //
 
 #import "MineCollectionViewController.h"
+#import "GuessYouLikeModel.h"
 //headerView
 #import "MineHeaderCollectionReusableView.h"
+#import "GuessYouLikeCollectionReusableView.h"
 //cells
 #import "MineSectionZeroCollectionViewCell.h"
 #import "MineSectionOneCollectionViewCell.h"
 #import "MineSectionTwoCollectionViewCell.h"
 #import "MineSectionThreeCollectionViewCell.h"
+#import "PublicOneCollectionViewCell.h"
 //presentController
 #import "BaseNavViewController.h"
 //#import "LoginViewController.h"
@@ -23,6 +26,9 @@
 #import "OrderAllListCollectionViewController.h"
 #import "AddressViewController.h"
 #import "MyPageSetViewController.h"
+#import "FollowAllListCollectionViewController.h"
+#import "FootPrintAllListCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
 
 @interface MineCollectionViewController ()<UICollectionViewDelegateFlowLayout>
 @property (strong, nonatomic) UIWindow *window;
@@ -38,29 +44,41 @@
     NSArray         *_sectionOneTitleArray;
     
     //查询到的用户积分
-    NSInteger       _userIntegral;
+    NSString        *_userIntegral;
+    //足迹个数
+    NSString        *_userTraceCount;
+    //关注个数
+    NSString        *_userFavoriteCount;
+    //猜你喜欢列表
+    NSArray         *_guessYouLikeArray;
 }
 
 //headerViewIdentifier
-static NSString * const reusableHeaderViewsIdentifier     = @"MineHeaderCollectionReusableView";
+static NSString * const reusableHeaderViewsIdentifier       = @"MineHeaderCollectionReusableView";
 //cellIdentifier
-static NSString * const reusableSectionZeroIdentifier = @"MineSectionZeroCollectionViewCell";
-static NSString * const reusableSectionOneIdentifier = @"MineSectionOneCollectionViewCell";
-static NSString * const reusableSectionTwoIdentifier = @"MineSectionTwoCollectionViewCell";
-static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeCollectionViewCell";
+static NSString * const reusableSectionZeroIdentifier       = @"MineSectionZeroCollectionViewCell";
+static NSString * const reusableSectionOneIdentifier        = @"MineSectionOneCollectionViewCell";
+static NSString * const reusableSectionTwoIdentifier        = @"MineSectionTwoCollectionViewCell";
+static NSString * const reusableSectionThreeIdentifier      = @"MineSectionThreeCollectionViewCell";
+static NSString * const reusableGuessHeaderViewsIdentifier  = @"GuessYouLikeCollectionReusableView";
+static NSString * const reusableSectionGuessIdentifier      = @"PublicOneCollectionViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    _sectionOneImageArray = @[@"我的页面_21", @"我的页面_27", @"我的页面_18", @"我的页面_24"];
-    _sectionOneTitleArray = @[@"待支付", @"待发货", @"待收货", @"退款/售后"];
+    _sectionOneImageArray = @[@"我的页面_21", @"我的页面_27", @"我的页面_24"];
+    _sectionOneTitleArray = @[@"待支付", @"待发货", @"退款/售后"];
     
     // Uncomment the following line to preserve selection between presentations
     // self.clearsSelectionOnViewWillAppear = NO;
 #pragma mark 注册section的headerView
     // Register header classes
     [self.collectionView registerNib:[UINib nibWithNibName:reusableHeaderViewsIdentifier bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableHeaderViewsIdentifier];
+    [self.collectionView registerNib:[UINib nibWithNibName:reusableGuessHeaderViewsIdentifier bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:reusableGuessHeaderViewsIdentifier];
     
+    [self.collectionView registerClass:[PublicOneCollectionViewCell class] forCellWithReuseIdentifier:reusableSectionGuessIdentifier];
+    
+    [self getGuessYouListList];
     // Do any additional setup after loading the view.
 }
 
@@ -74,20 +92,51 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
         [self queryUserIntrgral];
+        [self getTraceCount];
     }
-    _userIntegral = 0;
+    _userIntegral = @"0";
+    _userTraceCount = 0;
     [self.collectionView reloadData];
 }
 
 #pragma mark 请求数据
 //查询用户积分
 - (void)queryUserIntrgral {
-    [[NetworkService sharedInstance] getUserQueryIntegralSuccess:^(NSInteger integral) {
+    [[NetworkService sharedInstance] getUserQueryIntegralSuccess:^(NSString *integral) {
         _userIntegral = integral;
         [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:2]];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
     }];
+}
+//足迹个数
+- (void)getTraceCount {
+    [[NetworkService sharedInstance] getUserTraceListCountSuccess:^(NSString *responseObject) {
+        _userTraceCount = responseObject;
+        [self getFavoriteCount];
+    } Failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+    }];
+}
+//关注个数
+- (void)getFavoriteCount {
+    [[NetworkService sharedInstance] getUserFavoriteListCountSuccess:^(NSString *responseObject) {
+        _userFavoriteCount = responseObject;
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
+    } Failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+    }];
+}
+//猜你喜欢
+- (void)getGuessYouListList {
+    [[NetworkService sharedInstance] getGuessYouLikeListChannelId:-1
+                                                           cityId:010
+                                                          Success:^(NSArray *responseObject) {
+                                                              _guessYouLikeArray = responseObject;
+                                                              [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:4]];
+                                                          } Failure:^(NSError *error) {
+                                                              [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+                                                          }];
 }
 
 #pragma mark Method
@@ -102,35 +151,46 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
 }
 //进入订单页
 - (void)pushOrderConWithType:(NSInteger)type {
-    OrderAllListCollectionViewController *orderAllListCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"OrderAllListCollectionViewController"];
-    if (type == 1) {
-        orderAllListCon.orderType = allOrderList;
-    }
-    if (type == 2) {
-        orderAllListCon.orderType = unPayOrderList;
-    }
-    if (type == 3) {
-        orderAllListCon.orderType = unSendOrderList;
+    if (type != 4) {
+        OrderAllListCollectionViewController *orderAllListCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"OrderAllListCollectionViewController"];
+        if (type == 1) {
+            orderAllListCon.orderType = allOrderList;
+        }
+        if (type == 2) {
+            orderAllListCon.orderType = unPayOrderList;
+        }
+        if (type == 3) {
+            orderAllListCon.orderType = unSendOrderList;
+        }
+//        if (type == 4) {
+//            orderAllListCon.orderType = unReceiveOrderList;
+//        }
+        [self.navigationController pushViewController:orderAllListCon animated:YES];
     }
     if (type == 4) {
-        orderAllListCon.orderType = unReceiveOrderList;
+        [SVProgressHUD showErrorWithStatus:@"该功能暂未实现"];
     }
-    [self.navigationController pushViewController:orderAllListCon animated:YES];
 }
 
 #pragma mark <UICollectionViewDataSource>
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 4;
+    return 5;
 }
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (section == 1) {
-        return 4;
+        return 3;
     }
     if (section == 3) {
         return 2;
+    }
+    if (section == 4) {
+        if (ARRAY_IS_NIL(_guessYouLikeArray)) {
+            return 0;
+        }
+        return _guessYouLikeArray.count;
     }
     return 1;
 }
@@ -141,9 +201,32 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
         
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
             cell.userNickname.text = GetObjectUserDefault(@"nickname");
+            cell.footPrintLabel.text = _userTraceCount;
+            cell.favoriteLabel.text = _userFavoriteCount;
         } else {
             cell.userNickname.text = @"登录/注册";
+            cell.footPrintLabel.text = @"0";
+            cell.favoriteLabel.text = @"0";
         }
+        /**
+         *  我的关注
+         */
+        cell.block_MyFavorite = ^() {
+            [self judgeIsLoginYes:^{
+                FollowAllListCollectionViewController *followAllListCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"FollowAllListCollectionViewController"];
+                [self.navigationController pushViewController:followAllListCon animated:YES];
+            }];
+            
+        };
+        /**
+         *  我的足迹
+         */
+        cell.block_MyFootPrint = ^() {
+            [self judgeIsLoginYes:^{
+                FootPrintAllListCollectionViewController *footPrintCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"FootPrintAllListCollectionViewController"];
+                [self.navigationController pushViewController:footPrintCon animated:YES];
+            }];
+        };
         
         return cell;
     }
@@ -152,23 +235,12 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
         
         [cell cellWithImageStr:_sectionOneImageArray[indexPath.item] Title:_sectionOneTitleArray[indexPath.item]];
         
-//        //重新定位cell的位置 (消除其中两个cell之间的像素差)
-//        originYForSection0 = cell.frame.origin.y;
-//        [cell setFrame:CGRectMake(originXForSection0, originYForSection0, MineSectionOneCellWith, MineSectionOneCellHeight)];
-//        originXForSection0 = cell.frame.origin.x + cell.frame.size.width;
-//        NSLog(@"%f", originXForSection0);
-//        
-//        if (indexPath.item == 3) {
-//            originXForSection0 = 0;
-//            originYForSection0 = 0;
-//        }
-        
         return cell;
     }
     if (indexPath.section == 2) {
         MineSectionTwoCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reusableSectionTwoIdentifier forIndexPath:indexPath];
         
-        cell.integralLabel.text = [NSString stringWithFormat:@"%lu", (long)_userIntegral];
+        cell.integralLabel.text = [NSString stringWithFormat:@"%@分", _userIntegral];
         /**
          *  支付宝充值
          */
@@ -228,6 +300,14 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
         
         return cell;
     }
+    if (indexPath.section == 4) {
+        PublicOneCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reusableSectionGuessIdentifier forIndexPath:indexPath];
+        
+        if (!ARRAY_IS_NIL(_guessYouLikeArray)) {
+            [cell cellWithGuessModel:_guessYouLikeArray[indexPath.item]];
+        }
+        return cell;
+    }
     return nil;
 }
 
@@ -246,6 +326,11 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
         
         return headerView;
     }
+    if (indexPath.section == 4) {
+        GuessYouLikeCollectionReusableView *guessYouLikeHeaderView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableGuessHeaderViewsIdentifier forIndexPath:indexPath];
+        
+        return guessYouLikeHeaderView;
+    }
     return nil;
 }
 
@@ -256,6 +341,9 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
     }
     if (section == 3) {
         return UIEdgeInsetsMake(MineSectionThreeCellHeaderViewHeight, 0, 0, 0);
+    }
+    if (section == 4) {
+        return UIEdgeInsetsMake(0, (SCREEN_WIDTH - (PublicOneCellWidth * 2) - 10) / 2, 0, (SCREEN_WIDTH - (PublicOneCellWidth * 2) - 10) / 2);
     }
     return UIEdgeInsetsMake(1, 0, 0, 0);
 }
@@ -268,10 +356,13 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
         return CGSizeMake(MineSectionOneCellWith, MineSectionOneCellHeight);
     }
     if (indexPath.section == 2) {
-        return CGSizeMake(SCREEN_WIDTH, MineSectionTwoCellHeight);
+        return CGSizeMake(SCREEN_WIDTH, 80);
     }
     if (indexPath.section == 3) {
         return CGSizeMake(SCREEN_WIDTH, MineSectionThreeCellHeight);
+    }
+    if (indexPath.section == 4) {
+        return CGSizeMake(PublicOneCellWidth, PublicOneCellHeight);
     }
     return CGSizeMake(0, 0);
 }
@@ -289,6 +380,15 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     if (section == 3) {
         return 1.0;
+    }
+    if (section == 4) {
+        return PublicOneCellToLeftValue;
+    }
+    return 0;
+}
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(nonnull UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    if (section == 4) {
+        return 10;
     }
     return 0;
 }
@@ -320,7 +420,12 @@ static NSString * const reusableSectionThreeIdentifier = @"MineSectionThreeColle
                 [SVProgressHUD showErrorWithStatus:@"该功能暂未实现!"];
             }];
         }
-        
+    }
+    if (indexPath.section == 4) {
+        GuessYouLikeModel *guessModel = _guessYouLikeArray[indexPath.item];
+        ProductDetailPageViewController *productDetailController = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
+        productDetailController.productDetailId = guessModel.sku;
+        [self.navigationController showViewController:productDetailController sender:self];
     }
 }
 

@@ -29,7 +29,12 @@
 /**
  *  积分价格
  */
-@property (assign, nonatomic) NSInteger amount;
+@property (copy, nonatomic) NSString *amount;
+
+/**
+ *  裁剪后的图片
+ */
+@property (strong, nonatomic) UIImage *clipedImage;
 
 + (GuessYouLikeModel *)modelWithDic:(NSDictionary *)dic;
 

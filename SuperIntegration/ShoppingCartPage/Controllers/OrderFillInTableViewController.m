@@ -19,7 +19,7 @@
 #import "OrderCommitView.h"
 //controllers
 #import "OrderPayViewController.h"
-#import "ProductDetailPageCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
 #import "OrderAddressManagerTableViewController.h"
 
 @interface OrderFillInTableViewController ()
@@ -28,6 +28,13 @@
     AddresslistModel    *_defaultAddressModel;
 }
 @property (weak, nonatomic) OrderCommitView *commitView;
+@property (strong, nonatomic) NSMutableArray *productListArray;
+//订单总价
+@property (copy, nonatomic) NSString *totalAmount;
+//运费
+@property (assign, nonatomic) CGFloat freightPrice;
+//订单价格
+@property (copy, nonatomic) NSString *amountPrice;
 @end
 
 @implementation OrderFillInTableViewController
@@ -46,8 +53,18 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
 //    __weak OrderFillInTableViewController *weakSelf = self;
     
 //    [WINDOW addSubview:_commitView];
+    _totalAmount = @"";
+    _freightPrice = 0.0;
+    _amountPrice = @"";
+    _productListArray = [NSMutableArray array];
+    for (ShoppingCartPageModel *cartModel in self.productsArray) {
+        NSDictionary *dic = @{@"sku":cartModel.sku, @"num":@(cartModel.amount)};
+        [_productListArray addObject:dic];
+    }
+
 #pragma mark 请求数据
     [self getDefaultAddress];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -60,10 +77,16 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
 #pragma mark 底部提交订单视图
     _commitView = [[[NSBundle mainBundle] loadNibNamed:@"OrderCommitView" owner:nil options:nil] lastObject];
     [_commitView setFrame:CGRectMake(0, SCREEN_HEIGHT - 49, SCREEN_WIDTH, 49)];
-    _commitView.allPriceLabel.text = [NSString stringWithFormat:@"%@分", self.allPrice];
+    
     //提交订单
     _commitView.commitClickedBlock = ^() {
         
+        if (_defaultAddressModel == nil) {
+            [SVProgressHUD showErrorWithStatus:@"请完善地址"];
+            return ;
+        }
+        
+        [SVProgressHUD showWithStatus:@"正在创建订单..."];
         if (!(OBJ_IS_NULL(_defaultAddressModel) || (_defaultAddressModel.id1 == 0))) {
             /**
              *  批量库存查询
@@ -79,17 +102,15 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
                                                                             /**
                                                                              *  创建订单
                                                                              */
-                                                                            NSMutableArray *productListArray = [NSMutableArray array];
-                                                                            for (ShoppingCartPageModel *cartModel in self.productsArray) {
-                                                                                NSDictionary *dic = @{@"sku":cartModel.sku, @"num":@(cartModel.amount)};
-                                                                                [productListArray addObject:dic];
-                                                                            }
-                                                                            [[NetworkService sharedInstance] postOrderCreateWithAddressId:_defaultAddressModel.id1 ProductList:productListArray
+                                                                            
+                                                                            [[NetworkService sharedInstance] postOrderCreateWithAddressId:_defaultAddressModel.id1 ProductList:self.productListArray
                                                                                                                                   Success:^(NSDictionary *responseObject) {
                                                                                                                                       NSLog(@"createOrderSuccess");
                                                                                                                                       
                                                                                                                                       [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
                                                                                                                                       
+                                                                                                                                    
+                                                                                                                                      [SVProgressHUD dismiss];
                                                                                                                                       OrderPayViewController *orderPayCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"OrderPayViewController"];
                                                                                                                                       orderPayCon.orderDic = responseObject;
                                                                                                     
@@ -120,6 +141,7 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
 #pragma mark  请求数据
 //获得默认地址
 - (void)getDefaultAddress {
+    
     [[NetworkService sharedInstance] getUserAddressListSuccess:^(NSArray *responseObject) {
         //字典转模型
         for (NSDictionary *dic in responseObject) {
@@ -128,12 +150,34 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
             
             [model mj_setKeyValues:dic];
             
+            _defaultAddressModel = model;
             if (model.isDefault == 1) {
                 _defaultAddressModel = model;
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+
+                [self getOrderPrice];
                 return ;
             }
         }
+
+        [self getOrderPrice];
+    } Failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+    }];
+}
+//计算订单价格
+- (void)getOrderPrice {
+    [[NetworkService sharedInstance] postOrderCreateWithCityId:_defaultAddressModel.cityId.integerValue ProductList:self.productListArray Success:^(NSDictionary *responseObject) {
+        if (DIC_CONTAIN_STR(responseObject, @"totalAmount")) {
+            self.totalAmount = [NSString stringWithFormat:@"%.2f", [responseObject[@"totalAmount"] floatValue]];
+        }
+        if (DIC_CONTAIN_STR(responseObject, @"amount")) {
+            self.amountPrice = [NSString stringWithFormat:@"%.2f", [responseObject[@"amount"] floatValue]];
+        }
+        if (DIC_CONTAIN_STR(responseObject, @"freight")) {
+            self.freightPrice = [responseObject[@"freight"] floatValue];
+        }
+        _commitView.allPriceLabel.text = [NSString stringWithFormat:@"%@分", self.totalAmount];
+        [self.tableView reloadData];
     } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
     }];
@@ -157,9 +201,10 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
     [Utility setTableFooterViewZero:tableView];
     if (indexPath.section == 0) {
         OrderAddressTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reusableOrderAddressIdentifier forIndexPath:indexPath];
-        
+//        cell.userInteractionEnabled = NO;
         if (_defaultAddressModel != nil) {
             [cell cellWithModel:_defaultAddressModel];
+//            cell.userInteractionEnabled = YES;
         }
         
         return cell;
@@ -176,7 +221,8 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
     }
     if (indexPath.section == 3) {
         OrderPayAmountTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reusableOrderPayAmountIdentifier forIndexPath:indexPath];
-        [cell cellWithProductPrice:self.allPrice roadPrice:@"0"];
+
+        [cell cellWithProductPrice:self.amountPrice roadPrice:self.freightPrice];
         return cell;
     }
     return nil;
@@ -219,12 +265,13 @@ static NSString * const reusableOrderPayAmountIdentifier            = @"OrderPay
         managerCon.block_DidSelectAddress = ^(AddresslistModel *model) {
             _defaultAddressModel = model;
             [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+            [self getOrderPrice];
         };
         [self.navigationController pushViewController:managerCon animated:YES];
     }
     if (indexPath.section == 1) {
         ShoppingCartPageModel *model = self.productsArray[indexPath.row];
-        ProductDetailPageCollectionViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageCollectionViewController"];
+        ProductDetailPageViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
         productDetailCon.productDetailId = model.sku;
         [self.navigationController pushViewController:productDetailCon animated:YES];
     }

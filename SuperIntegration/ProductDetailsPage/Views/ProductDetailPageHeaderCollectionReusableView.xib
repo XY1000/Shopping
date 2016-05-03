@@ -13,6 +13,12 @@
             <subviews>
                 <view contentMode="scaleToFill" restorationIdentifier="BannerView" translatesAutoresizingMaskIntoConstraints="NO" id="hc1-Yd-sxk" customClass="BannerView">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="300"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jhK-pE-Ra3">
+                            <rect key="frame" x="40" y="-22" width="240" height="11"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                    </subviews>
                 </view>
             </subviews>
             <constraints>

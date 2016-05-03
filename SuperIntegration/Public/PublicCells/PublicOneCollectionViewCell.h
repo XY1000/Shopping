@@ -7,11 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LeftSlipEditView.h"
 @class SearchResultModel;
 @class GuessYouLikeModel;
 
+
 @interface PublicOneCollectionViewCell : UICollectionViewCell
+
+@property (strong, nonatomic) LeftSlipEditView *slipView;
+
 
 - (void)cellWithModel:(SearchResultModel *)model;
 - (void)cellWithGuessModel:(GuessYouLikeModel *)model;
+
 @end

@@ -21,7 +21,7 @@
 #import "UIImageView+WebCache.h"
 #import "UIButton+WebCache.h"
 #import <MJExtension.h>
-#import "LoadDataView.h"
+#import "Masonry.h"
 
 /**
  *  Utilities Utility
@@ -51,6 +51,11 @@
 #import "MineDefineHeader.h"
 #import "ClassifyPageDefineHeader.h"
 #import "SuperIntegration-Swift.h"
+
+
+#import "LoadDataView.h"
+#import "JFLoadingView.h"
+#import "CustomFavoriteShared.h"
 
 /**
  *  @author hxy

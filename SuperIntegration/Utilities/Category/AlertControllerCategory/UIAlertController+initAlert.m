@@ -16,7 +16,7 @@
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:actionTitle style:actionStyle handler:^(UIAlertAction * _Nonnull action) {
         actionHandle();
     }];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"好的" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:otherActiontitle style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         otherActionHandle();
     }];
     [self addAction:cancelAction];

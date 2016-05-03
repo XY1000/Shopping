@@ -17,6 +17,7 @@
 //订单详情
 @property (weak, nonatomic) IBOutlet UILabel *numLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *labelBottomToImageLayoutConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *layout_ImageWidth;
 
 @end
 
@@ -25,6 +26,7 @@
 - (void)awakeFromNib {
     // Initialization code
     [self.labelBottomToImageLayoutConstraint setConstant:-PublicZeroCellLabelValue];
+    self.layout_ImageWidth.constant = (PublicZeroCellHeight - 20);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -35,14 +37,14 @@
 
 - (void)cellWithModel:(ShoppingCartPageModel *)model {
     self.nameLabel.text = model.name;
-    self.priceLabel.text = [NSString stringWithFormat:@"%d", model.price * model.amount];
+    self.priceLabel.text = [NSString stringWithFormat:@"%.2f", [model.price floatValue] * model.amount];
     [self.myImageView sd_setImageWithURL:[NSURL URLWithString:model.image] placeholderImage:[UIImage imageNamed:@"place"]];
     
 }
 
 - (void)cellWithOrderDetailModel:(OrderDetailModelProductList *)orderDetailModel {
     self.nameLabel.text = orderDetailModel.name;
-    self.priceLabel.text = [NSString stringWithFormat:@"%ld", (long)orderDetailModel.amount];
+    self.priceLabel.text = orderDetailModel.amount;
     [self.myImageView sd_setImageWithURL:[NSURL URLWithString:orderDetailModel.image] placeholderImage:[UIImage imageNamed:@"place"]];
     self.numLabel.text = [NSString stringWithFormat:@"%ld", (long)orderDetailModel.num];
 }

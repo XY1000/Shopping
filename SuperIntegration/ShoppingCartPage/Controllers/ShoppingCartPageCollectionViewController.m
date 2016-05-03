@@ -7,6 +7,7 @@
 //
 
 #import "ShoppingCartPageCollectionViewController.h"
+#import <IQKeyboardManager/IQKeyboardManager.h>//
 //models
 #import "ShoppingCartPageModel.h"
 //cells
@@ -21,12 +22,14 @@
 #import "ShoppingCartPageFooterCollectionReusableView.h"
 //controller
 #import "OrderFillInTableViewController.h"
-#import "ProductDetailPageCollectionViewController.h"
+#import "ProductDetailPageViewController.h"
 
 @interface ShoppingCartPageCollectionViewController()<UICollectionViewDelegateFlowLayout>
 {
     //购物车列表(默认全选)
     NSMutableArray *_shoppingCartMArray;
+    NSString       *_freight;
+    NSInteger      _freightLine;
     
 }
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *rightItem;
@@ -51,9 +54,24 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [ShoppingCartManager sharedInstance].completeSelectedMArray = [NSMutableArray array];
+    [ShoppingCartManager sharedInstance].editSelectMArray = [NSMutableArray array];
+    
+#pragma mark 添加上拉下拉刷新
+    //添加下拉刷新
+    self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        
+        [self.collectionView.mj_header beginRefreshing];
+        _cellType = compelteCell;
+        
+        //获得购物车列表
+        [self getCartList];
+        
+    }];
 #pragma mark   创建底部编辑视图
     [self createCompleteView];
     [self createEditView];
+    
     
     // Do any additional setup after loading the view.
 }
@@ -61,26 +79,23 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [ShoppingCartManager sharedInstance].completeSelectedMArray = [NSMutableArray array];
-    [ShoppingCartManager sharedInstance].editSelectMArray = [NSMutableArray array];
+    [IQKeyboardManager sharedManager].enable = NO;
 #pragma mark   定位导航栏右侧按钮位置
+    [self.rightItemButton setHidden:YES];
+    [self.rightItemButton setSelected:NO];
+    [self.navigationItem setCustomRightBarButtonItem:self.rightItem ToRightValue:-2];
+
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
-        [self.rightItemButton setHidden:NO];
-        [self.rightItemButton setSelected:NO];
-        [self.navigationItem setCustomRightBarButtonItem:self.rightItem ToRightValue:-2];
-    } else {
-        [self.rightItemButton setHidden:YES];
+        _cellType = compelteCell;
+        [self getAddRoadPrice];
     }
-    
-    _cellType = compelteCell;
-    
-    //获得购物车列表
-    [self getCartList];
     
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [IQKeyboardManager sharedManager].enable = YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -93,6 +108,7 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
     
     [[ShoppingCartManager sharedInstance].completeSelectedMArray removeAllObjects];
     [[ShoppingCartManager sharedInstance].editSelectMArray removeAllObjects];
+    [JFLoadingView JF_Loading];
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
         [_shoppingCartMArray removeAllObjects];
@@ -116,25 +132,44 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
                 [self.editView removeFromSuperview];
             }
             
+            [ShoppingCartManager sharedInstance].allMArray = _shoppingCartMArray;
+            
             for (ShoppingCartPageModel *model in _shoppingCartMArray) {
                 [[ShoppingCartManager sharedInstance].completeSelectedMArray addObject:model];
             }
             for (ShoppingCartPageModel *model in _shoppingCartMArray) {
                 [[ShoppingCartManager sharedInstance].editSelectMArray addObject:model];
             }
-            
             [self.completeView completeViewContentWithArray:[ShoppingCartManager sharedInstance].completeSelectedMArray];
             
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
             [self.collectionView reloadData];
+            [JFLoadingView JF_LoadSuccess];
+            [self.collectionView.mj_header endRefreshing];
         } Failure:^(NSError *error) {
             [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+            [JFLoadingView JF_LoadSuccess];
         }];
     } else {
+        [JFLoadingView JF_LoadSuccess];
+        [self.collectionView.mj_header endRefreshing];
         [_shoppingCartMArray removeAllObjects];
         [self.completeView removeFromSuperview];
         [self.editView removeFromSuperview];
         [self.collectionView reloadData];
+        [SVProgressHUD showErrorWithStatus:@"请登录"];
     }
+}
+
+- (void)getAddRoadPrice {
+    [[NetworkService sharedInstance] getAddRoadPriceSuccess:^(NSDictionary *responseObject) {
+        _freight = responseObject[@"freight"];
+        _freightLine = [responseObject[@"freightLine"] integerValue];
+        //获得购物车列表
+        [self getCartList];
+    } Failure:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+    }];
 }
 
 - (IBAction)rightItemClicked:(id)sender {
@@ -152,7 +187,6 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
     [self.collectionView reloadData];
 }
 
-
 #pragma mark createView
 - (void)createCompleteView {
     
@@ -169,14 +203,16 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
             for (ShoppingCartPageModel *model in tmpShoppingCartMArray) {
                 [[ShoppingCartManager sharedInstance].completeSelectedMArray addObject:model];
             }
+            [weakSelf.completeView completeViewContentWithArray:[ShoppingCartManager sharedInstance].allMArray];
         }
+        [weakSelf.completeView completeViewContentWithArray:[ShoppingCartManager sharedInstance].completeSelectedMArray];
         [weakSelf.collectionView reloadData];
     };
     
     //去结算
     self.completeView.completedBlock = ^() {
         OrderFillInTableViewController *orderCon = [STOARYBOARD(@"Main") instantiateViewControllerWithIdentifier:@"OrderFillInTableViewController"];
-        orderCon.allPrice = weakSelf.completeView.totalLabel.text;
+//        orderCon.allPrice = weakSelf.completeView.totalLabel.text;
         orderCon.productsArray = (NSArray *)[ShoppingCartManager sharedInstance].completeSelectedMArray;
         [weakSelf.navigationController pushViewController:orderCon animated:YES];
     };
@@ -203,17 +239,35 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
     
     //批量删除
     self.editView.deleteClickedBlock = ^() {
-        NSMutableArray *deleteArray = [NSMutableArray array];
-        for (ShoppingCartPageModel *model in [ShoppingCartManager sharedInstance].editSelectMArray) {
-            [deleteArray addObject:@(model.id)];
-        }
-        [[NetworkService sharedInstance] postShoppingCartPageDeleteCartsWithIdList:(NSArray *)deleteArray Success:^{
-            NSLog(@"批量删除成功");
-            [weakSelf getCartList];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
-        } Failure:^(NSError *error) {
-            [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+        UIAlertController *alertController = [[UIAlertController alloc]
+                                              initAlertWithTitle:@"提示"
+                                              message:@"确定删除此商品吗?"
+                                              preferredStyle:UIAlertControllerStyleAlert
+                                              antionTitle:@"取消"
+                                              actionStyle:UIAlertActionStyleDestructive
+                                              actionHandle:^{
+                                                  return ;
+                                              }
+                                              otherActionTitle:@"确定"
+                                              otherActionStyle:UIAlertActionStyleDestructive
+                                              otherActionHandle:^{
+                                                  NSMutableArray *deleteArray = [NSMutableArray array];
+                                                  for (ShoppingCartPageModel *model in [ShoppingCartManager sharedInstance].editSelectMArray) {
+                                                      [deleteArray addObject:@(model.id)];
+                                                  }
+                                                  [[NetworkService sharedInstance] postShoppingCartPageDeleteCartsWithIdList:(NSArray *)deleteArray Success:^{
+                                                      NSLog(@"批量删除成功");
+                                                      [weakSelf getCartList];
+                                                      [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
+                                                  } Failure:^(NSError *error) {
+                                                      [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
+                                                  }];
+                                              }];
+        
+        [alertController alertShowForViewController:weakSelf completion:^{
+            
         }];
+        
     };
     
 }
@@ -232,9 +286,7 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     if (ARRAY_IS_NIL(_shoppingCartMArray)) {
-        
-        self.rightItemButton.hidden = YES;
-        
+        [self.rightItemButton setHidden:YES];
         ShoppingCartPageCartEmptyCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reusableEmptyCartCellIdentifier forIndexPath:indexPath];
         [cell isHiddenLoginButtonSuperView];
         //登录
@@ -247,6 +299,8 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
         //去逛逛
         cell.goShoppingClickedBlock = ^() {
             NSLog(@"去逛逛");
+//            [SVProgressHUD showErrorWithStatus:@"该功能暂未实现"];
+            self.tabBarController.selectedIndex = 0;
         };
         return cell;
     } else {
@@ -285,7 +339,8 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
             NSLog(@"修改购物车   %lu %lu", (long)cartId, (long)nowAmount);
             [[NetworkService sharedInstance] putShoppingCartPageUpdateCartWithCartId:cartId Amount:nowAmount Success:^{
                 NSLog(@"修改成功");
-                [self getCartList];
+//                [self getCartList];
+                [self.completeView completeViewContentWithArray:[ShoppingCartManager sharedInstance].completeSelectedMArray];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
             } Failure:^(NSError *error) {
                 [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
@@ -325,9 +380,10 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
     
     if (kind == UICollectionElementKindSectionHeader) {
         ShoppingCartPageHeaderCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:reusableCartHeaderViewIdentifier forIndexPath:indexPath];
-        
+        headerView.label_AddRoadPrice.text = [NSString stringWithFormat:@"%ld分以下需加收多%@分运费", (long)_freightLine, _freight];
         headerView.freeOfChargeClickedBlock = ^() {
             NSLog(@"凑单免运费");
+            [SVProgressHUD showErrorWithStatus:@"该功能暂未实现"];
         };
         return headerView;
     } else {
@@ -380,11 +436,14 @@ static NSString * const reusableCartFooterViewIdentifier        = @"ShoppingCart
     if (_cellType == editCell) {
         return;
     }
-    ShoppingCartPageModel *model = _shoppingCartMArray[indexPath.item];
-    ProductDetailPageCollectionViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageCollectionViewController"];
-    productDetailCon.productDetailId = model.sku;
-    [self.navigationController pushViewController:productDetailCon animated:YES];
+    if (!ARRAY_IS_NIL(_shoppingCartMArray)) {
+        ShoppingCartPageModel *model = _shoppingCartMArray[indexPath.item];
+        ProductDetailPageViewController *productDetailCon = [STOARYBOARD(@"ProductStoryboard") instantiateViewControllerWithIdentifier:@"ProductDetailPageViewController"];
+        productDetailCon.productDetailId = model.sku;
+        [self.navigationController pushViewController:productDetailCon animated:YES];
+    }
 }
+
 
 
 @end

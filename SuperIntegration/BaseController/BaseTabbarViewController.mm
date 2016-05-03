@@ -60,7 +60,11 @@
         [[NetworkService sharedInstance] getShoppingCartPageCartAmountSuccess:^(NSInteger responseObject) {
             DLog(@"购物车数量 = %ld",(long)responseObject);
             if (responseObject > 0) {
-                self.shoppingCartPageBarItem.badgeValue = [NSString stringWithFormat:@"%ld", (long)responseObject];
+                if (responseObject > 99) {
+                    self.shoppingCartPageBarItem.badgeValue = @"99+";
+                } else {
+                    self.shoppingCartPageBarItem.badgeValue = [NSString stringWithFormat:@"%ld", (long)responseObject];
+                }
             } else {
                 self.shoppingCartPageBarItem.badgeValue = nil;
             }

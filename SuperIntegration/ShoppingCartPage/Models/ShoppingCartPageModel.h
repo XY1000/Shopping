@@ -29,7 +29,7 @@
 /**
  *  积分价格
  */
-@property (assign, nonatomic) NSInteger price;
+@property (copy, nonatomic) NSString *price;
 /**
  *  数量
  */

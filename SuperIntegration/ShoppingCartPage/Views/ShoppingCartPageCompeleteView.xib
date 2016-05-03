@@ -53,7 +53,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="合计 : " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdQ-g8-jct">
-                    <rect key="frame" x="97" y="41" width="43" height="18"/>
+                    <rect key="frame" x="82" y="41" width="43" height="18"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="43" id="Hwb-35-71O"/>
                     </constraints>
@@ -62,7 +62,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JMo-x9-ZE5">
-                    <rect key="frame" x="142" y="39" width="110" height="23"/>
+                    <rect key="frame" x="127" y="39" width="125" height="23"/>
                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                     <color key="textColor" red="0.80000000000000004" green="0.043137254899999998" blue="0.1647058824" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
@@ -77,7 +77,7 @@
                 <constraint firstAttribute="trailing" secondItem="HfC-Ug-Uyb" secondAttribute="trailing" constant="13" id="LqR-lP-udd"/>
                 <constraint firstItem="ZYq-Ji-oqP" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="O7s-mS-QSn"/>
                 <constraint firstItem="HfC-Ug-Uyb" firstAttribute="centerY" secondItem="ZYq-Ji-oqP" secondAttribute="centerY" id="TXW-Tb-6KR"/>
-                <constraint firstItem="bdQ-g8-jct" firstAttribute="leading" secondItem="ZYq-Ji-oqP" secondAttribute="trailing" constant="30" id="UjT-NM-GCN"/>
+                <constraint firstItem="bdQ-g8-jct" firstAttribute="leading" secondItem="ZYq-Ji-oqP" secondAttribute="trailing" constant="15" id="UjT-NM-GCN"/>
                 <constraint firstItem="JMo-x9-ZE5" firstAttribute="centerY" secondItem="bdQ-g8-jct" secondAttribute="centerY" id="ecz-78-eZB"/>
                 <constraint firstItem="aaD-TY-jT9" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="hYE-fh-GbJ"/>
                 <constraint firstItem="aaD-TY-jT9" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="iZ8-ba-Mvc"/>
@@ -89,6 +89,7 @@
             <connections>
                 <outlet property="allButton" destination="ZYq-Ji-oqP" id="DjS-1h-rOc"/>
                 <outlet property="completeButton" destination="HfC-Ug-Uyb" id="Udp-Km-FB4"/>
+                <outlet property="layout_ButtonWidth" destination="pUE-o2-KZD" id="JKm-8d-jCU"/>
                 <outlet property="totalLabel" destination="JMo-x9-ZE5" id="Se2-vp-MDd"/>
             </connections>
             <point key="canvasLocation" x="440.5" y="462"/>

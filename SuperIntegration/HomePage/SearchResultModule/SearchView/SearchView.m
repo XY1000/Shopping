@@ -22,6 +22,7 @@
 - (void)awakeFromNib {
     [self.searchResultNavBarViewTextFieldWidthLayoutConstraint setConstant:SearchButtonWidth];
     self.textField.delegate = self;
+    self.textField.returnKeyType = UIReturnKeySearch;
     [self.textField becomeFirstResponder];
 #pragma mark collectionView
     self.searchCollectionView.delegate = self;
@@ -33,19 +34,17 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [[NetworkService sharedInstance] getSearchResultWithKeyWords:textField.text
-                                                         Success:^(NSArray *responseObject) {
-                                                             
-                                                             self.searchViewReturnClickedBlock(responseObject);
-                                                             
-                                                         } Failure:^(NSError *error) {
-                                                             [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@", error.userInfo[@"errmsg"]]];
-                                                         }];
+    self.searchViewReturnClickedBlock(0,textField.text);
     return YES;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.textField resignFirstResponder];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.textField resignFirstResponder];
+    [self removeFromSuperview];
 }
 
 #pragma mark collectionView

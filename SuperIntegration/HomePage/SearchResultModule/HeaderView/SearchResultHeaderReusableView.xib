@@ -13,10 +13,13 @@
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jWD-DC-6Rh">
                     <rect key="frame" x="0.0" y="0.0" width="94" height="50"/>
-                    <inset key="titleEdgeInsets" minX="-18" minY="0.0" maxX="0.0" maxY="0.0"/>
-                    <inset key="imageEdgeInsets" minX="80" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                    <inset key="imageEdgeInsets" minX="75" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="默认排序" image="搜索结果页1_03">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected">
+                        <color key="titleColor" red="0.80000000000000004" green="0.039215686274509803" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <connections>
                         <action selector="button1Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="oAR-QY-fXu"/>
@@ -24,12 +27,13 @@
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4lW-Gl-6la">
                     <rect key="frame" x="188" y="0.0" width="93" height="50"/>
-                    <inset key="imageEdgeInsets" minX="78" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                    <inset key="imageEdgeInsets" minX="65" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="销量" image="搜索结果页_综合排序展开_10">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <state key="selected" title="销量">
-                        <color key="titleColor" red="0.73725490196078436" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.80000000000000004" green="0.039215686274509803" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <connections>
                         <action selector="button3Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="slp-Wn-efE"/>
@@ -37,7 +41,7 @@
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ID9-S1-6hb">
                     <rect key="frame" x="281" y="0.0" width="94" height="50"/>
-                    <inset key="titleEdgeInsets" minX="36" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <state key="normal" title="筛选">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
@@ -47,12 +51,13 @@
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h0H-hQ-ned">
                     <rect key="frame" x="94" y="0.0" width="94" height="50"/>
-                    <inset key="imageEdgeInsets" minX="78" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                    <inset key="imageEdgeInsets" minX="65" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="价格" image="搜索结果页_综合排序展开_10">
                         <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <state key="selected" title="价格">
-                        <color key="titleColor" red="0.73725490196078436" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleColor" red="0.80000000000000004" green="0.039215686274509803" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
                     </state>
                     <connections>
                         <action selector="button2Clicked:" destination="iN0-l3-epB" eventType="touchUpInside" id="ImW-8Q-lXt"/>

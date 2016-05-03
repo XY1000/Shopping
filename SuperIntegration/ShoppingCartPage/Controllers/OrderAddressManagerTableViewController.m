@@ -9,7 +9,7 @@
 #import "OrderAddressManagerTableViewController.h"
 #import "OrderAddressTableViewCell.h"
 #import "AddressModel.h"
-#import "EditAddressController.h"
+#import "CreatAddressTableViewController.h"
 @interface OrderAddressManagerTableViewController ()
 
 @property (strong, nonatomic) NSMutableArray *mArray_AddressList;
@@ -24,7 +24,7 @@
     self.mArray_AddressList = [NSMutableArray array];
     
     self.tableView.separatorInset = UIEdgeInsetsMake(0, SCREEN_WIDTH, 0, SCREEN_WIDTH);
-    [self getAddressList];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -34,6 +34,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [self getAddressList];
+    
     self.view_BottomView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT - 49, SCREEN_WIDTH, 49)];
     self.view_BottomView.backgroundColor = [UIColor whiteColor];
     [WINDOW addSubview:self.view_BottomView];
@@ -54,11 +57,14 @@
 }
 
 - (void)btn_CreateAddressClicked {
-    EditAddressController *editAddressCon = [STOARYBOARD(@"User") instantiateViewControllerWithIdentifier:@"EditAddressController"];
-    [self.navigationController pushViewController:editAddressCon animated:YES];
+    CreatAddressTableViewController *createAddressCon = [STOARYBOARD(@"User") instantiateViewControllerWithIdentifier:@"CreatAddressTableViewController"];
+    [self.navigationController pushViewController:createAddressCon animated:YES];
 }
 
 - (void)getAddressList {
+    
+    [self.mArray_AddressList removeAllObjects];
+    
     [[NetworkService sharedInstance] getUserAddressListSuccess:^(NSArray *responseObject) {
         //字典转模型
         for (NSDictionary *dic in responseObject) {
@@ -76,10 +82,6 @@
 }
 
 #pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (ARRAY_IS_NIL(self.mArray_AddressList)) {

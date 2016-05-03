@@ -65,7 +65,7 @@
 /**
  *  显示类型
  */
-@property (assign, nonatomic) NSInteger showType;
+@property (assign, nonatomic) NSInteger appType;
 /**
  *  产品列表
  */

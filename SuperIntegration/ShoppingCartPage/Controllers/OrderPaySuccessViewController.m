@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.priceLabel setTitle:self.price forState:UIControlStateNormal];
+    [self.priceLabel setTitle:[NSString stringWithFormat:@"%@分",self.price] forState:UIControlStateNormal];
     
     // Do any additional setup after loading the view.
 }

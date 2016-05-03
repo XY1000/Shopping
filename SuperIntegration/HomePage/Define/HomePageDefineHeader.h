@@ -12,8 +12,8 @@
 /*
  Controller
  */
-//bannerView的高度
-#define BannerViewHeight                SCREEN_HEIGHT * 410 / (667 * 2)
+//bannerView的高度 410
+#define BannerViewHeight                SCREEN_HEIGHT * 350 / (667 * 2)
 //headerView的高度
 #define HeaderViewsHieght               SCREEN_HEIGHT * (80 + 20) / (667 * 2)
 //#define GuessHeaderViewHeight           SCREEN_HEIGHT * 100 / (667 * 2)

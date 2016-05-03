@@ -9,7 +9,7 @@
 #import "SearchResultModel.h"
 
 @implementation SearchResultModel
-
+@synthesize id;
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key {
     
 }

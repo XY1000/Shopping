@@ -10,6 +10,7 @@
 
 @interface ShoppingCartPageHeaderCollectionReusableView : UICollectionReusableView
 
+@property (weak, nonatomic) IBOutlet UILabel *label_AddRoadPrice;
 @property (copy, nonatomic) void(^freeOfChargeClickedBlock)();
 
 @end

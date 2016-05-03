@@ -51,7 +51,9 @@
  *  @param success 成功
  *  @param failure 失败
  */
-- (void)getGuessYouLikeListSuccess:(void(^)(NSArray *responseObject))success
+- (void)getGuessYouLikeListChannelId:(NSInteger)channelId
+                              cityId:(NSInteger)cityId
+                             Success:(void(^)(NSArray *responseObject))success
                            Failure:(void(^)(NSError *error))failure;
 #pragma mark 产品
 /**
@@ -72,7 +74,7 @@
  *  @param failure    失败
  */
 - (void)getProductDetailPriceWithProductSku:(NSString *)productSku
-                                     Success:(void(^)(NSInteger responseObject))success
+                                     Success:(void(^)(NSString *responseObject))success
                                      Failure:(void(^)(NSError *error))failure;
 /**
  *  获得产品详情
@@ -155,6 +157,15 @@
                                           Success:(void(^)())success
                                           Failure:(void(^)(NSError *error))failure;
 
+/**
+ *  计算加运费
+ *
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getAddRoadPriceSuccess:(void(^)(NSDictionary *responseObject))success
+                       Failure:(void(^)(NSError *error))failure;
+
 #pragma mark 订单
 /**
  *   查询商品库存
@@ -199,6 +210,18 @@
                              Success:(void(^)(NSDictionary *responseObject))success
                              Failure:(void(^)(NSError *error))failure;
 
+/**
+ *  计算订单价格
+ *
+ *  @param cityId      城市id
+ *  @param productList 商品数组
+ *  @param success     成功
+ *  @param failure     失败
+ */
+- (void)postOrderCreateWithCityId:(NSInteger)cityId
+                         ProductList:(NSArray *)productList
+                             Success:(void(^)(NSDictionary *responseObject))success
+                             Failure:(void(^)(NSError *error))failure;
 /**
  *  订单支付
  *
@@ -514,8 +537,40 @@
  *  @param success 成功返回积分
  *  @param failure 失败
  */
-- (void)getUserQueryIntegralSuccess:(void(^)(NSInteger integral))success
+- (void)getUserQueryIntegralSuccess:(void(^)(NSString *integral))success
                        Failure:(void(^)(NSError *error))failure;
+
+
+/**
+ *  获得用户足迹
+ *
+ *  @param rows    分页行数
+ *  @param page    分页页数
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getUserTraceListWithRows:(NSInteger)rows
+                            Page:(NSInteger)page
+                         Success:(void(^)(BOOL isHas, NSArray *timeArray, NSArray *productArray))success
+                         Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  获取用户足迹个数
+ *
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getUserTraceListCountSuccess:(void(^)(NSString *responseObject))success
+                             Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  获取用户关注个数
+ *
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getUserFavoriteListCountSuccess:(void(^)(NSString *responseObject))success
+                             Failure:(void(^)(NSError *error))failure;
 
 #pragma mark  积分充值
 /**
@@ -526,7 +581,7 @@
  *  @param failure 失败
  */
 - (void)getRMBWithAmount:(NSInteger)amount
-                 Success:(void(^)(CGFloat RMB))success
+                 Success:(void(^)(NSString *RMB))success
                  Failure:(void(^)(NSError *error))failure;
 
 /**
@@ -549,9 +604,26 @@
  *  @param failure  失败
  */
 - (void)getSearchResultWithKeyWords:(NSString *)keyWords
+                               Rows:(NSInteger)rows
+                               Page:(NSInteger)page
+                         CategoryId:(NSInteger)categoryId
+                               Sort:(NSString *)sort
+                              Order:(NSString *)order
                             Success:(void(^)(NSArray *responseObject))success
                             Failure:(void(^)(NSError *error))failure;
 
+/**
+ *  搜索结果价格列表
+ *
+ *  @param skuList sku数组
+ *  @param cityId  城市id
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)postSearchResultPriceListWithSkuList:(NSArray *)skuList
+                                      CityId:(NSString *)cityId
+                                     Success:(void(^)(NSArray *responseObject))success
+                                     Failure:(void(^)(NSError *error))failure;
 
 #pragma mark 地区信息
 /**
@@ -641,7 +713,7 @@
  *  @param success   成功
  *  @param failure   失败
  */
-- (void)favouriteDelete:(NSString *)sku
+- (void)favouriteDelete:(NSInteger)favoriteId
                 Success:(void(^)())success
                 Failure:(void(^)(NSError *error))failure;
 
@@ -695,6 +767,7 @@
                       countyId:(NSString *)countyId
                         townId:(NSString *)townId
                           name:(NSString *)name
+                         Email:(NSString *)email
                  addressDetail:(NSString *)addressDetail
                          Phone:(NSString *)phone
                   provinceName:(NSString *)provinceName
@@ -703,6 +776,84 @@
                       townName:(NSString*)townName
                        Success:(void(^)())success
                        Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  @author HXY
+ *
+ *  手机号校验
+ *
+ *  @param telephone 手机号
+ *  @param success   成功
+ *  @param failure   失败
+ */
+- (void)postCheckTelephoneWithTelephone:(NSString *)telephone
+                                Success:(void(^)())success
+                                Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  @author HXY
+ *
+ *  邮箱校验
+ *
+ *  @param email   邮箱
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)postCheckEmailWithEmail:(NSString *)email
+                        Success:(void(^)())success
+                        Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  @author HXY
+ *
+ *  修改邮箱验证码
+ *
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getChangeEmailCodeWithTelephone:(NSString *)telephone
+                                Success:(void(^)())success
+                   Failure:(void(^)(NSError *error))failure;
+/**
+ *  @author HXY
+ *
+ *  修改手机号验证码
+ *
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getChangeTelephoneCodeWithTelephone:(NSString *)telephone
+                                Success:(void(^)())success
+                          Failure:(void(^)(NSError *error))failure;
+
+/**
+ *  @author HXY
+ *
+ *  修改邮箱验证码校验
+ *
+ *  @param code    验证码
+ *  @param phone   手机号
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getCheckEmailCodelWithCode:(NSString *)code
+                         telephone:(NSString*)phone
+                           Success:(void(^)())success
+                           Failure:(void(^)(NSError *error))failure;
+/**
+ *  @author HXY
+ *
+ *  修改手机验证码校验
+ *
+ *  @param code    验证码
+ *  @param phone   手机号
+ *  @param success 成功
+ *  @param failure 失败
+ */
+- (void)getCheckTelephoneCodelWithCode:(NSString *)code
+                         telephone:(NSString*)phone
+                           Success:(void(^)())success
+                           Failure:(void(^)(NSError *error))failure;
 
 @end
 

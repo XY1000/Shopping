@@ -11,6 +11,10 @@
 
 @interface SearchResultCollectionViewController : UICollectionViewController
 
-@property (strong, nonatomic) NSArray *searchResultList;
+//关键字
+@property (copy, nonatomic) NSString *keyWords;
+//关键字id
+@property (assign, nonatomic) NSInteger keyWordsCategoryId;
 
+@property (copy, nonatomic) NSString *searchWords;
 @end

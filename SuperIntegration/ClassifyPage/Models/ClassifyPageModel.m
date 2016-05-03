@@ -23,6 +23,8 @@
         self.channelId = [BaseModel stringObjectWithResponseObject:dic key:@"id"];
         self.channelName = [BaseModel stringObjectWithResponseObject:dic key:@"name"];
         self.webPicUrl = [BaseModel stringObjectWithResponseObject:dic key:@"webPicUrl"];
+        self.appName = [BaseModel stringObjectWithResponseObject:dic key:@"appName"];
+        self.appPicUrl = [BaseModel stringObjectWithResponseObject:dic key:@"appPicUrl"];
         NSArray *tmpArray = [BaseModel arrayObjectWithResponseObject:dic key:@"list"];
         NSMutableArray *tmpMArray = [NSMutableArray array];
         for (NSDictionary *dic in tmpArray) {

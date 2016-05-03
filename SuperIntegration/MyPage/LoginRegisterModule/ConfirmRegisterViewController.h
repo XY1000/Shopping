@@ -10,4 +10,6 @@
 
 @interface ConfirmRegisterViewController : UIViewController
 
+@property (copy, nonatomic) NSString *phone;
+
 @end

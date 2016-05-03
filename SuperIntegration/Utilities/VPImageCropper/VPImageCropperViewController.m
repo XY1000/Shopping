@@ -281,6 +281,7 @@
     CGContextDrawImage(context, myImageRect, subImageRef);
     UIImage* smallImage = [UIImage imageWithCGImage:subImageRef];
     UIGraphicsEndImageContext();
+    CGImageRelease(subImageRef);
     return smallImage;
 }
 

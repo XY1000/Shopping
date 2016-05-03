@@ -9,7 +9,8 @@
 #ifndef NetAPIHeader_h
 #define NetAPIHeader_h
 
-#define Root_Path  @"http://115.29.43.27:8004"
+//#define Root_Path  @"http://115.29.43.27:8004"
+#define Root_Path  @"http://121.42.192.12"
 #define Send_Url(rootPath, api, path) [NSString stringWithFormat:@"%@/%@/%@", rootPath, api, path]
 //方法api
 static NSString * const category_Api         = @"api";
@@ -23,7 +24,7 @@ static NSString * const homePageSpecial_HotList                 = @"special/sell
 //首页频道列表
 static NSString * const homePageSpecial_ChannelList             = @"channel/main/list/app";
 //猜你喜欢列表
-static NSString * const GuessYouLike_List                       = @"guess/list";
+static NSString * const GuessYouLike_List                       = @"guess/list/price";
 #pragma mark 产品
 //产品图片
 static NSString * const productDetailPage_productImages         = @"product/image";
@@ -49,6 +50,8 @@ static NSString * const shoppingCartPage_AddCart                = @"cart/create"
 static NSString * const shoppingCartPage_UpdateCart             = @"cart/update";
 //批量删除购物车
 static NSString * const shoppingCartPage_DeleteCartArray        = @"cart/delete/array";
+//加运费
+static NSString * const shoppingCartPage_addRoadPrice           = @"order/freight/info";
 
 #pragma mark 订单
 //查询库存
@@ -59,6 +62,8 @@ static NSString * const OrderMoudle_queryInventoryArray         = @"product/inve
 static NSString * const OrderMoudle_AllOrder                    = @"order/all/list";
 //创建订单
 static NSString * const OrderMoudle_CreateOrder                 = @"order/create";
+//计算订单价格
+static NSString * const OrderMoudle_getOrderPrice               = @"order/count/amount";
 //订单支付
 static NSString * const OrderMoudle_OrderPay                    = @"order/pay";
 //未支付订单
@@ -107,7 +112,12 @@ static NSString * const myPage_AddAddress                       = @"address/crea
 static NSString * const myPage_DeleteAddress                    = @"address/delete";
 //查询积分
 static NSString * const myPage_QueryIntrgral                    = @"user/get/score";
-
+//我的足迹
+static NSString * const myPage_MyTraceList                      = @"trace/list";
+//我的足迹个数
+static NSString * const myPage_MyTraceListCount                 = @"trace/total";
+//我的关注个数
+static NSString * const myPage_MyFavoriteListCount              = @"favourite/total";
 #pragma mark 充值
 //获取充值金额
 static NSString * const myPage_GetRMB                           = @"recharge/count/price";
@@ -116,8 +126,10 @@ static NSString * const myPage_IntegralRecharge                 = @"recharge/cre
 
 
 #pragma mark 搜索
+//产品搜索
 static NSString * const searchPage_Result                       = @"product/search";
-
+//产品价格
+static NSString * const searchPage_ResultPriceList              = @"product/price/list";
 #pragma 地区信息
 //省份列表
 static NSString * const province                                =
@@ -146,6 +158,30 @@ static NSString *const payPassword                              = @"user/payPass
 
 //修改地址
 static NSString *const ChangeAddress                            = @"address/update";
+
+//手机号校验
+static NSString * const checkTelephone                          =
+    @"user/telephone/check";
+
+//邮箱校验
+static NSString * const checkEmail                              =
+    @"user/email/check";
+
+//修改邮箱验证码
+static NSString * const emailCode                               =
+    @"user/change/email/code";
+
+//修改邮箱验证码校验
+static NSString * const checkEmailCode                          =
+    @"user/change/email/code/check";
+
+//修改手机号验证码
+static NSString * const telephoneCode                           =
+    @"user/change/telephone/code";
+
+//修改手机号验证码校验
+static NSString * const checkTelephoneCode                      =
+    @"user/change/telephone/code/check";
 
 
 #endif /* NetAPIHeader_h */

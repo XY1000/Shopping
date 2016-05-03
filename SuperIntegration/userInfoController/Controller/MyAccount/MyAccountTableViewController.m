@@ -45,6 +45,13 @@
     
     [HXYTool userNotLogin:self login:^{
        
+        if ([[NSUserDefaults standardUserDefaults] objectForKey:@"icon"]) {
+            
+            NSData *iconData = [[NSUserDefaults standardUserDefaults] objectForKey:@"icon"];
+            self.img_icon.image = [UIImage imageWithData:iconData];
+            
+        }
+        
         
         [[NetworkService sharedInstance] getUserInformationWithUserId:str  Success:^{
         
@@ -114,6 +121,12 @@
         
         [[PostImageView sharedPostImageView] createActionSheetViewWithViewController:self title:nil andMethod:^(UIImage *image, NSString *imagePath, NSData *imageData) {
             self.img_icon.image = image;
+            
+            
+#warning 存本地
+            
+            [[NSUserDefaults standardUserDefaults] setObject:imageData forKey:@"icon"];
+            
            // [SVProgressHUD showWithStatus:@"正在上传..." maskType:SVProgressHUDMaskTypeClear];
 //            [[NetworkService sharedInstance] uploadFile:imagePath data:imageData Success:^(NSDictionary *responseObject) {
 //                [SVProgressHUD showSuccessWithStatus:@"上传成功"];
@@ -135,5 +148,12 @@
     
     
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    
+    return 10;
+}
+
 
 @end

@@ -126,8 +126,10 @@
 /**
  *  首页频道列表
  */
-- (void)getGuessYouLikeListSuccess:(void (^)(NSArray *))success
-                           Failure:(void (^)(NSError *))failure
+- (void)getGuessYouLikeListChannelId:(NSInteger)channelId
+                              cityId:(NSInteger)cityId
+                             Success:(void (^)(NSArray *))success
+                             Failure:(void (^)(NSError *))failure
 {
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, GuessYouLike_List)
                     parameters:nil
@@ -187,14 +189,14 @@
  *  获得产品积分价格
  */
 - (void)getProductDetailPriceWithProductSku:(NSString *)productSku
-                                    Success:(void (^)(NSInteger))success
+                                    Success:(void (^)(NSString *))success
                                     Failure:(void (^)(NSError *))failure
 {
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, productDetailPage_productPrice)
                     parameters:@{@"sku":productSku}
                        success:^(NSDictionary *responseObject) {
                            if ([self isSucceed:responseObject]) {
-                               success([responseObject[@"amount"] integerValue]);
+                               success(responseObject[@"amount"]);
                            } else{
                                NSError *error = [NSError errorWithDomain:@"请求错误"
                                                                     code:[responseObject[@"errno"] integerValue]
@@ -400,6 +402,31 @@
                             failure(err);
                         }];
 }
+/**
+ *  计算加运费
+ */
+- (void)getAddRoadPriceSuccess:(void (^)(NSDictionary *))success
+                       Failure:(void (^)(NSError *))failure
+{
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, shoppingCartPage_addRoadPrice)
+                    parameters:nil
+                       success:^(NSDictionary *responseObject) {
+                           if ([self isSucceed:responseObject]) {
+                               
+                               success(responseObject);
+                           }else{
+                               NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                    code:[responseObject[@"errno"] integerValue]
+                                                                userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                               failure(error);
+                           }
+                       } fail:^(NSError *error) {
+                           NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                              code:0
+                                                          userInfo:@{@"errmsg":@"网络异常"}];
+                           failure(err);
+                       }];
+}
 
 #pragma mark 订单
 //产品库存
@@ -418,7 +445,7 @@
                                if ([responseObject[@"productInventory"][@"state"] isEqualToString:@"00"]) {
                                    success();
                                } else {
-                                   NSString *retutnMsg = nil;
+                                   NSString *retutnMsg = @"";
                                    if ([responseObject[@"productInventory"][@"state"] isEqualToString:@"01"]) {
                                        retutnMsg = @"暂不销售";
                                    }
@@ -490,6 +517,30 @@
     NSLog(@"%@", @{@"addressId":@(addressId), @"productList":productList});
     [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, OrderMoudle_CreateOrder)
                      parameters:@{@"addressId":@(addressId), @"productList":productList}
+                        success:^(NSDictionary *responseObject) {
+                            if ([self isSucceed:responseObject]) {
+                                success(responseObject);
+                            }else{
+                                NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                     code:[responseObject[@"errno"] integerValue]
+                                                                 userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                                failure(error);
+                            }
+                        } fail:^(NSError *error) {
+                            NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                               code:0
+                                                           userInfo:@{@"errmsg":@"网络异常"}];
+                            failure(err);
+                        }];
+}
+//计算订单价格
+- (void)postOrderCreateWithCityId:(NSInteger)cityId
+                      ProductList:(NSArray *)productList
+                          Success:(void (^)(NSDictionary *))success
+                          Failure:(void (^)(NSError *))failure
+{
+    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, OrderMoudle_getOrderPrice)
+                     parameters:@{@"cityId":@(cityId), @"productList":productList}
                         success:^(NSDictionary *responseObject) {
                             if ([self isSucceed:responseObject]) {
                                 success(responseObject);
@@ -903,21 +954,27 @@
                         success:^(NSDictionary *responseObject) {
                             if ([self isSucceed:responseObject]) {
                                 
-//                                DLog(@"登录responseObject = %@", responseObject);
-                                SetObjectUserDefault(username, @"username");
-                                SetObjectUserDefault(password, @"password");
-//                                SetObjectUserDefault(@(1), @"isLogin");
-                                SetObjectUserDefault([responseObject objectForKey:@"id"], @"userId");
+                                DLog(@"登录成功responseObject = %@", responseObject);
+
+                                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isLogin"];
+                                [[NSUserDefaults standardUserDefaults] setObject:[NSString stringWithFormat:@"%ld",[[responseObject objectForKey:@"id"] integerValue]] forKey:@"userId"];
+                                
+                                
+                                //当请求成共后调用如下代码, 保存Cookie
+                                NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL: [NSURL URLWithString:Send_Url(Root_Path, category_Api, myPage_UserLogin)]];
+                                NSData *data = [NSKeyedArchiver archivedDataWithRootObject:cookies];
+                                NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                NSLog(@"%@", str);
+                                [[NSUserDefaults standardUserDefaults] setObject:data forKey:@"myCookies"];
                                 
                                 //获取用户信息
-                                [self getUserInformationWithUserId:[responseObject objectForKey:@"id"] Success:^{
+                                [self getUserInformationWithUserId:[[NSUserDefaults standardUserDefaults] objectForKey:@"userId"] Success:^{
                                     DLog(@"获取用户信息成功");
-                                    //获得该用户的购物车数量
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
-                                    success();
+                                    
                                 } Failure:^(NSError *error) {
                                     [SVProgressHUD showErrorWithStatus:[NSString stringWithFormat:@"%@", error.userInfo[@"errmsg"]]];
                                 }];
+                                success();
                                 
                             }else{
                                 NSError *error = [NSError errorWithDomain:@"请求错误"
@@ -942,7 +999,7 @@
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_UserInformation)
                     parameters:@{@"userId":userId}
                        success:^(NSDictionary *responseObject) {
-                           DLog(@"获取用户信息%@",@{@"userId":userId});
+//                           DLog(@"获取用户信息%@",@{@"userId":userId});
                            if ([self isSucceed:responseObject]) {
                                if (STR_IS_NIL([responseObject objectForKey:@"nickname"])) {
                                    SetObjectUserDefault(@"用户名", @"nickname");
@@ -950,12 +1007,14 @@
                                    SetObjectUserDefault([responseObject objectForKey:@"nickname"], @"nickname");
                                }
                                SetObjectUserDefault([responseObject objectForKey:@"sex"], @"sex");
-                               
 
                                //用户信息转换成模型
-                              UserModel *model = [ModelManager getUserModel];
-                            [model mj_setKeyValues:responseObject];
-                              //[ModelManager saveUserInfoWithDic:responseObject];
+                               UserModel *model = [ModelManager getUserModel];
+                               [model mj_setKeyValues:responseObject];
+                               //[ModelManager saveUserInfoWithDic:responseObject];
+                               
+                               //获得该用户的购物车数量
+                               [[NSNotificationCenter defaultCenter] postNotificationName:@"cartAmount" object:nil];
                                
                                success();
                            }else{
@@ -1007,6 +1066,12 @@
                                      Success:(void (^)())success
                                      Failure:(void (^)(NSError *))failure
 {
+    if (STR_IS_NIL(realName)) {
+        realName = @"";
+    }
+    if (STR_IS_NIL(nickName)) {
+        nickName = @"";
+    }
     [HttpClient putJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_UserChangeInformation)
                     parameters:@{@"realname":realName, @"nickname":nickName, @"sex":@(sex)}
                        success:^(NSDictionary *responseObject) {
@@ -1171,14 +1236,126 @@
 /**
  *  查询用户积分
  */
-- (void)getUserQueryIntegralSuccess:(void (^)(NSInteger))success
+- (void)getUserQueryIntegralSuccess:(void (^)(NSString *))success
                             Failure:(void (^)(NSError *))failure
 {
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_QueryIntrgral)
                     parameters:nil
                        success:^(NSDictionary *responseObject) {
                            if ([self isSucceed:responseObject]) {
-                               success([[responseObject objectForKey:@"amount"] integerValue]);
+                               success([responseObject objectForKey:@"amount"]);
+                           }else{
+                               NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                    code:[responseObject[@"errno"] integerValue]
+                                                                userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                               failure(error);
+                           }
+                       } fail:^(NSError *error) {
+                           NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                              code:0
+                                                          userInfo:@{@"errmsg":@"网络异常"}];
+                           failure(err);
+                       }];
+}
+/**
+ *  我的足迹
+ */
+- (void)getUserTraceListWithRows:(NSInteger)rows
+                            Page:(NSInteger)page
+                         Success:(void (^)(BOOL, NSArray *, NSArray *))success
+                         Failure:(void (^)(NSError *))failure
+{
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_MyTraceList)
+                    parameters:@{@"rows":@(rows), @"page":@(page)}
+                       success:^(NSDictionary *responseObject) {
+                           if ([self isSucceed:responseObject]) {
+                               
+                               if ([responseObject[@"total"] integerValue] != 0) {
+                                   //数据处理
+                                   NSArray *allKeys = [[responseObject objectForKey:@"list"] allKeys];
+                                   //数组排序
+                                   allKeys = [allKeys sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+                                       
+                                       NSString *str1 = obj1;
+                                       NSString *str2 = obj2;
+                                       if ([str1 compare:str2 options:NSDiacriticInsensitiveSearch] == NSOrderedAscending) {
+                                           return (NSComparisonResult)NSOrderedDescending;
+                                       }
+                                       if ([str1 compare:str2 options:NSDiacriticInsensitiveSearch] == NSOrderedDescending) {
+                                           return (NSComparisonResult)NSOrderedAscending;
+                                       }
+                                       return (NSComparisonResult)NSOrderedSame;
+                                       
+                                   }];
+//                                   NSMutableArray *allKeysMArray = [NSMutableArray arrayWithCapacity:allKeys.count];
+//                                   for (NSString *str in allKeys) {
+//                                       NSString *key = [str stringByReplacingOccurrencesOfString:@"-" withString:@"."];
+//                                       [allKeysMArray addObject:key];
+//                                   }
+                                   NSLog(@"%@", allKeys);
+                                   NSMutableArray *tmpArray1 = [NSMutableArray array];
+                                   for (NSString *key in allKeys) {
+                                       NSDictionary *dic = [[[responseObject objectForKey:@"list"] objectForKey:key] objectForKey:@"list"];
+                                       NSArray *subAllKeys = [dic allKeys];
+                                       NSMutableArray *subTmpArray = [NSMutableArray array];
+                                       for (NSString *subKey in subAllKeys) {
+                                           NSDictionary *subDic = [[[[responseObject objectForKey:@"list"] objectForKey:key] objectForKey:@"list"] objectForKey:subKey];
+                                           SearchResultModel *footPrintModel = [SearchResultModel modelWithDic:subDic];
+                                           [subTmpArray addObject:footPrintModel];
+                                       }
+                                       //                                   NSDictionary *dictory = @{@"time":key, @"productList":subTmpArray};
+                                       [tmpArray1 addObject:subTmpArray];
+                                   }
+                                   
+                                   success(YES,allKeys, (NSArray *)tmpArray1);
+                               } else {
+                                   success(NO,@[], @[]);
+                               }
+                               
+                           }else{
+                               NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                    code:[responseObject[@"errno"] integerValue]
+                                                                userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                               failure(error);
+                           }
+                       } fail:^(NSError *error) {
+                           NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                              code:0
+                                                          userInfo:@{@"errmsg":@"网络异常"}];
+                           failure(err);
+                       }];
+}
+
+- (void)getUserTraceListCountSuccess:(void (^)(NSString *))success
+                             Failure:(void (^)(NSError *))failure
+{
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_MyTraceListCount)
+                    parameters:nil
+                       success:^(NSDictionary *responseObject) {
+                           if ([self isSucceed:responseObject]) {
+                               success([responseObject objectForKey:@"total"]);
+                           }else{
+                               NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                    code:[responseObject[@"errno"] integerValue]
+                                                                userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                               failure(error);
+                           }
+                       } fail:^(NSError *error) {
+                           NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                              code:0
+                                                          userInfo:@{@"errmsg":@"网络异常"}];
+                           failure(err);
+                       }];
+}
+
+- (void)getUserFavoriteListCountSuccess:(void (^)(NSString *))success
+                                Failure:(void (^)(NSError *))failure
+{
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_MyFavoriteListCount)
+                    parameters:nil
+                       success:^(NSDictionary *responseObject) {
+                           if ([self isSucceed:responseObject]) {
+                               success([responseObject objectForKey:@"total"]);
                            }else{
                                NSError *error = [NSError errorWithDomain:@"请求错误"
                                                                     code:[responseObject[@"errno"] integerValue]
@@ -1196,14 +1373,14 @@
 #pragma mark  积分充值
 //获取充值金额
 - (void)getRMBWithAmount:(NSInteger)amount
-                 Success:(void (^)(CGFloat))success
+                 Success:(void (^)(NSString *))success
                  Failure:(void (^)(NSError *))failure
 {
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, myPage_GetRMB)
                     parameters:@{@"amount":@(amount)}
                        success:^(NSDictionary *responseObject) {
                            if ([self isSucceed:responseObject]) {
-                               success([[responseObject objectForKey:@"price"] floatValue]);
+                               success([responseObject objectForKey:@"price"]);
                            }else{
                                NSError *error = [NSError errorWithDomain:@"请求错误"
                                                                     code:[responseObject[@"errno"] integerValue]
@@ -1216,6 +1393,7 @@
                                                           userInfo:@{@"errmsg":@"网络异常"}];
                            failure(err);
                        }];
+    
 }
 //充值积分
 - (void)postRechargeWithAmount:(NSInteger)amount
@@ -1245,11 +1423,32 @@
 
 #pragma mark 搜索
 - (void)getSearchResultWithKeyWords:(NSString *)keyWords
+                               Rows:(NSInteger)rows
+                               Page:(NSInteger)page
+                         CategoryId:(NSInteger)categoryId
+                               Sort:(NSString *)sort
+                              Order:(NSString *)order
                             Success:(void (^)(NSArray *))success
                             Failure:(void (^)(NSError *))failure
 {
+    NSDictionary *paramters = [NSDictionary dictionary];
+    if (STR_IS_NIL(keyWords)) {
+        keyWords = @"";
+    }
+    if (STR_IS_NIL(sort)) {
+        sort = @"";
+    }
+    if (STR_IS_NIL(order)) {
+        order = @"";
+    }
+    if (categoryId == 0) {
+        paramters = @{@"keyword":keyWords, @"rows":@(rows), @"page":@(page), @"sort":sort, @"order":order};
+    } else {
+        paramters = @{@"keyword":keyWords, @"rows":@(rows), @"page":@(page), @"categoryId":@(categoryId), @"sort":sort, @"order":order};
+    }
+    NSLog(@"%@", paramters);
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, searchPage_Result)
-                    parameters:@{@"keyword":keyWords}
+                    parameters:paramters
                        success:^(NSDictionary *responseObject) {
                            if ([self isSucceed:responseObject]) {
                                NSMutableArray *mArray = [NSMutableArray array];
@@ -1270,6 +1469,32 @@
                                                           userInfo:@{@"errmsg":@"网络异常"}];
                            failure(err);
                        }];
+}
+/**
+ *  搜索价格列表
+ */
+- (void)postSearchResultPriceListWithSkuList:(NSArray *)skuList
+                                      CityId:(NSString *)cityId
+                                     Success:(void (^)(NSArray *))success
+                                     Failure:(void (^)(NSError *))failure
+{
+    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, searchPage_ResultPriceList)
+                     parameters:@{@"skuList":skuList, @"cityId":cityId}
+                        success:^(NSDictionary *responseObject) {
+                            if ([self isSucceed:responseObject]) {
+                                success(responseObject[@"priceList"]);
+                            }else{
+                                NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                     code:[responseObject[@"errno"] integerValue]
+                                                                 userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                                failure(error);
+                            }
+                        } fail:^(NSError *error) {
+                            NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                               code:0
+                                                           userInfo:@{@"errmsg":@"网络异常"}];
+                            failure(err);
+                        }];
 }
 
 #pragma mark - 验证
@@ -1308,10 +1533,12 @@
 }
 
 - (void)getCityDataWithProvId:(NSString *)provId Success:(void (^)(NSArray *))success Failure:(void (^)(NSError *))failure{
-    
-    NSDictionary *dic = @{
-                          @"provinceId":provId
-                          };
+    NSDictionary *dic = [NSDictionary dictionary];
+    if (!STR_IS_NIL(provId)) {
+        dic = @{
+                              @"provinceId":provId
+                              };
+    }
     
     [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, city) parameters:dic success:^(NSDictionary *responseObject) {
         
@@ -1466,10 +1693,10 @@
  *  @param success   成功
  *  @param failure   失败
  */
-- (void)favouriteDelete:(NSString *)sku
+- (void)favouriteDelete:(NSInteger)favoriteId
                 Success:(void(^)())success
                 Failure:(void(^)(NSError *error))failure{
-    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, favouriteDelete) parameters:@{@"id":@([sku integerValue])} success:^(NSDictionary *responseObject) {
+    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, favouriteDelete) parameters:@{@"id":@(favoriteId)} success:^(NSDictionary *responseObject) {
         
         if ([self isSucceed:responseObject]) {
             
@@ -1502,26 +1729,34 @@
  */
 - (void)getFavouriteListSuccess:(void(^)(NSArray *responseObject))success
                         Failure:(void(^)(NSError *error))failure{
-    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, favouriteList) parameters:nil success:^(NSDictionary *responseObject) {
-        
-        if ([self isSucceed:responseObject]) {
-            success(responseObject[@"list"]);
-        }else{
-            NSError *error = [NSError errorWithDomain:@"请求错误"
-                                                 code:[responseObject[@"errno"] integerValue]
-                                             userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
-            failure(error);
-        }
-        
-        
-        
-    } fail:^(NSError *error) {
-        NSError *err = [NSError errorWithDomain:@"网络错误"
-                                           code:0
-                                       userInfo:@{@"errmsg":@"网络异常"}];
-        failure(err);
-        
-    }];
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, favouriteList)
+                    parameters:nil
+                       success:^(NSDictionary *responseObject) {
+                           
+                           if ([self isSucceed:responseObject]) {
+                               NSMutableArray *tmpArray = [NSMutableArray arrayWithCapacity:[responseObject[@"list"] count]];
+                               for (NSDictionary *dic in responseObject[@"list"]) {
+                                   SearchResultModel *followModel = [SearchResultModel modelWithDic:dic];
+                                   [tmpArray addObject:followModel];
+                               }
+                               
+                               success((NSArray *)tmpArray);
+                           }else{
+                               NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                    code:[responseObject[@"errno"] integerValue]
+                                                                userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                               failure(error);
+                           }
+                           
+                           
+                           
+                       } fail:^(NSError *error) {
+                           NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                              code:0
+                                                          userInfo:@{@"errmsg":@"网络异常"}];
+                           failure(err);
+                           
+                       }];
 
 }
 //设置支付密码
@@ -1555,7 +1790,17 @@
     
 }
 //修改地址
-- (void)putChangeAddressWithId:(NSInteger)id1 telephone:(NSString *)telephone contact:(NSString *)contact provinceId:(NSString *)provinceId cityId:(NSString *)cityId countyId:(NSString *)countyId townId:(NSString *)townId name:(NSString *)name addressDetail:(NSString *)addressDetail  Phone:(NSString *)phone
+- (void)putChangeAddressWithId:(NSInteger)id1
+                     telephone:(NSString *)telephone
+                       contact:(NSString *)contact
+                    provinceId:(NSString *)provinceId
+                        cityId:(NSString *)cityId
+                      countyId:(NSString *)countyId
+                        townId:(NSString *)townId
+                          name:(NSString *)name
+                         Email:(NSString *)email
+                 addressDetail:(NSString *)addressDetail
+                         Phone:(NSString *)phone
                   provinceName:(NSString *)provinceName
                       cityName:(NSString *)cityName
                     countyName:(NSString*)countyName
@@ -1564,7 +1809,14 @@
     
     
     [HttpClient putJsonWithUrl:Send_Url(Root_Path, category_Api, ChangeAddress) parameters:@{@"id":@(id1),
-                                                                                             @"telephone":telephone, @"contact":contact, @"provinceId":provinceId, @"cityId":cityId, @"countyId":countyId, @"townId":townId, @"name":name, @"addressDetail":addressDetail,@"phone":phone,@"provinceName":provinceName,@"cityName":cityName,@"countyName":countyName,@"townName":townName
+                                                                                             @"telephone":telephone, @"contact":contact, @"provinceId":provinceId, @"cityId":cityId, @"countyId":countyId, @"townId":townId,
+                                                        @"name":name,
+                                                                                             @"email":email,                              @"addressDetail":addressDetail,
+                                                                                             @"phone":phone,
+                                                                                             @"provinceName":provinceName,
+                                                                                             @"cityName":cityName,
+                                                                                             @"countyName":countyName,
+                                                                                             @"townName":townName
                                                                                              }success:^(NSDictionary *responseObject) {
                                                                                        
                                                                                                  if ([self isSucceed:responseObject]) {
@@ -1605,4 +1857,188 @@
         failure(@"商品库存为0!");
     }
 }
+
+//邮箱校验
+- (void)postCheckEmailWithEmail:(NSString *)email Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    
+    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, checkEmail)
+                     parameters:@{
+                                    @"email":email
+                                                                                           }
+                        success:^(NSDictionary *responseObject) {
+                                                                                               
+                                                                                               if ([self isSucceed:responseObject]) {
+                                                                                                   
+                                                                                                   success();
+                                                                                               }else{
+                                                                                                   NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                                                                                        code:[responseObject[@"errno"] integerValue]
+                                                                                                                                    userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                                                                                                   failure(error);
+                                                                                               }
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                           } fail:^(NSError *error) {
+                                                                                              
+                                                                                               NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                                                                                                  code:0
+                                                                                                                              userInfo:@{@"errmsg":@"网络异常"}];
+                                                                                               failure(err);
+                                                                                               
+                                                                                               
+                                                                                           }];
+    
+}
+
+//手机校验
+- (void)postCheckTelephoneWithTelephone:(NSString *)telephone Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    [HttpClient postJSONWithUrl:Send_Url(Root_Path, category_Api, checkTelephone)
+                     parameters:@{@"telephone":telephone} success:^(NSDictionary *responseObject) {
+                        
+                         if ([self isSucceed:responseObject]) {
+                             
+                             success();
+                         }else{
+                             NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                  code:[responseObject[@"errno"] integerValue]
+                                                              userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                             failure(error);
+                         }
+                         
+                         
+                     } fail:^(NSError *error) {
+                         
+                         
+                         NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                            code:0
+                                                        userInfo:@{@"errmsg":@"网络异常"}];
+                         failure(err);
+                         
+                     }];
+}
+
+
+// 修改邮箱验证码
+- (void)getChangeEmailCodeWithTelephone:(NSString *)telephone Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, emailCode)
+                    parameters:@{@"telephone":telephone} success:^(NSDictionary *responseObject) {
+                        
+                        if ([self isSucceed:responseObject]) {
+                            
+                            success();
+                        }else{
+                            NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                 code:[responseObject[@"errno"] integerValue]
+                                                             userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                            failure(error);
+                        }
+                        
+                        
+                        
+                    } fail:^(NSError *error) {
+                        
+                        NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                           code:0
+                                                       userInfo:@{@"errmsg":@"网络异常"}];
+                        failure(err);
+                        
+                        
+                    }];
+    
+    
+}
+
+
+//修改手机号验证码
+- (void)getChangeTelephoneCodeWithTelephone:(NSString *)telephone Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, telephoneCode)
+                    parameters:@{@"telephone":telephone} success:^(NSDictionary *responseObject) {
+                        
+                        if ([self isSucceed:responseObject]) {
+                            
+                            success();
+                        }else{
+                            NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                 code:[responseObject[@"errno"] integerValue]
+                                                             userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                            failure(error);
+                        }
+                        
+                        
+                        
+                    } fail:^(NSError *error) {
+                        
+                        NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                           code:0
+                                                       userInfo:@{@"errmsg":@"网络异常"}];
+                        failure(err);
+                    }];
+
+}
+
+//修改邮箱验证码校验
+- (void)getCheckEmailCodelWithCode:(NSString *)code telephone:(NSString *)phone Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, checkTelephoneCode)
+                    parameters:@{
+                                 @"telephone":phone,
+                                 @"code":code
+                                 }success:^(NSDictionary *responseObject) {
+                                     
+                                     if ([self isSucceed:responseObject]) {
+                                         
+                                         success();
+                                     }else{
+                                         NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                              code:[responseObject[@"errno"] integerValue]
+                                                                          userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                                         failure(error);
+                                     }
+ 
+                                     
+                                     
+                                 } fail:^(NSError *error) {
+                                    
+                                     NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                                        code:0
+                                                                    userInfo:@{@"errmsg":@"网络异常"}];
+                                     failure(err);
+                                 }];
+}
+
+//修改手机号验证码校验
+- (void)getCheckTelephoneCodelWithCode:(NSString *)code telephone:(NSString *)phone Success:(void (^)())success Failure:(void (^)(NSError *))failure {
+    
+    
+    [HttpClient getJsonWithUrl:Send_Url(Root_Path, category_Api, checkTelephoneCode)
+                    parameters:@{
+                                 @"telephone":phone,
+                                 @"code":code
+                                 }success:^(NSDictionary *responseObject) {
+                                     
+                                     if ([self isSucceed:responseObject]) {
+                                         
+                                         success();
+                                     }else{
+                                         NSError *error = [NSError errorWithDomain:@"请求错误"
+                                                                              code:[responseObject[@"errno"] integerValue]
+                                                                          userInfo:@{@"errmsg":responseObject[@"errmsg"]}];
+                                         failure(error);
+                                     }
+                                     
+                                 } fail:^(NSError *error) {
+                                     
+                                     NSError *err = [NSError errorWithDomain:@"网络错误"
+                                                                        code:0
+                                                                    userInfo:@{@"errmsg":@"网络异常"}];
+                                     failure(err);
+                                     
+                                 }];
+    
+    
+}
+
+
 @end

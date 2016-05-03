@@ -48,8 +48,6 @@
         if ([stringObject isKindOfClass:[NSNumber class]]) {
             NSNumber *temp = (NSNumber *)stringObject;
             return [NSString stringWithFormat:@"%@", temp];
-            
-            
         } else {
             if (stringObject) {
 //                DLog(@"%@", key);

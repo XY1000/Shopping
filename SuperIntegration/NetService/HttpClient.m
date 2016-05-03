@@ -19,16 +19,39 @@
 {
 }
 
++ (AFHTTPSessionManager *)sharedSessionManager {
+    
+    static dispatch_once_t once;
+    static AFHTTPSessionManager *manager = nil;
+    dispatch_once(&once, ^{
+        manager = [AFHTTPSessionManager manager];
+        
+        manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        manager.requestSerializer.timeoutInterval = 10.0;
+        // 设置返回格式
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    });
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"automicLogin"]) {
+        //请求前,设置上次保存的Cookie
+        NSData *cookiesdata = [[NSUserDefaults standardUserDefaults] objectForKey:@"myCookies"];
+        if([cookiesdata length]) {
+            NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookiesdata];
+            NSHTTPCookie *cookie;
+            for (cookie in cookies) {
+                [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+            }  
+        }
+    }
+    
+    return manager;
+}
+
 + (void)postJSONWithUrl:(NSString *)urlStr parameters:(id)parameters success:(void (^)(NSDictionary* responseObject))success fail:(void (^)(NSError *))fail
 {
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    // 设置返回格式
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    
-    [manager POST:urlStr parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
-        DLog(@"progress = %@",uploadProgress.description);
+
+    [[HttpClient sharedSessionManager] POST:urlStr parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
+//        DLog(@"progress = %@",uploadProgress.description);
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (success) {
             NSDictionary *jsonObject=[NSJSONSerialization
@@ -69,14 +92,9 @@
                success:(void (^)(NSDictionary* responseObject))success
                   fail:(void (^)(NSError *error))fail{
     
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    // 设置返回格式
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
-    [manager GET:urlStr parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
-        DLog(@"%@",downloadProgress);
+    [[HttpClient sharedSessionManager] GET:urlStr parameters:parameters progress:^(NSProgress * _Nonnull downloadProgress) {
+//        DLog(@"%@",downloadProgress);
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (success) {
             NSDictionary *jsonObject=[NSJSONSerialization
@@ -84,22 +102,24 @@
                                       options:NSJSONReadingMutableLeaves
                                       error:nil];
             success(jsonObject);
-            NSLog(@"get 重新登录");
+            
             if ([jsonObject[@"errno"] integerValue] == 20409) {
-                //登录失效
+                NSLog(@"%@", urlStr);
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isLogin"];
+                //用户未登录
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"login" object:nil];
                 
             }
-
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         DLog(@"%@", error);
         if (fail) {
-//            fail(error);
-            NSError *err = [NSError errorWithDomain:@"网络错误"
-                                               code:0
-                                           userInfo:@{@"errmsg":@"当前网络不给力哦~"}];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadError" object:nil userInfo:err.userInfo];
+            fail(error);
+//            NSError *err = [NSError errorWithDomain:@"网络错误"
+//                                               code:0
+//                                           userInfo:@{@"errmsg":@"当前网络不给力哦~"}];
+//
+//            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadError" object:nil userInfo:err.userInfo];
         }
     }];
 }
@@ -108,13 +128,8 @@
             parameters:(id)parameters
                success:(void (^)(NSDictionary* responseObject))success
                   fail:(void (^)(NSError *error))fail{
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    // 设置返回格式
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
-    [manager PUT:urlStr parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[HttpClient sharedSessionManager] PUT:urlStr parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (success) {
             NSDictionary *jsonObject=[NSJSONSerialization
                                       JSONObjectWithData:responseObject
@@ -155,16 +170,9 @@
                parameters:(id)parameters
                   success:(void (^)(NSDictionary* responseObject))success
                      fail:(void (^)(NSError *error))fail{
-   
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [manager setRequestSerializer:[AFJSONRequestSerializer serializer]];
-    // 设置返回格式
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
     
-    [manager DELETE:urlStr parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[HttpClient sharedSessionManager] DELETE:urlStr parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (success) {
             NSDictionary *jsonObject=[NSJSONSerialization
                                       JSONObjectWithData:responseObject
@@ -203,13 +211,7 @@
                         success:(void (^)(NSDictionary *))success
                            fail:(void (^)(NSError *))fail{
 
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    // 设置返回格式
-    manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    
-    [manager POST:urlStr parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [[HttpClient sharedSessionManager] POST:urlStr parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFileData:data name:@"file" fileName:@"headImage" mimeType:@"image/png"];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         

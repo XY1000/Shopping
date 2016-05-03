@@ -30,11 +30,6 @@
 
 - (IBAction)favoriteClicked:(id)sender {
     self.favoriteClickedBlock();
-    if (self.favouriteButton.selected) {
-        self.favouriteButton.backgroundColor = [UIColor redColor];
-    } else {
-        self.favouriteButton.backgroundColor = [UIColor yellowColor];
-    }
 }
 
 - (IBAction)customServiceClicked:(id)sender {

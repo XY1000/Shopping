@@ -119,7 +119,7 @@
         _cityArr = responseObject;
         
         [self pickerView:_pick didSelectRow:0 inComponent:1];
-        
+            [_pick selectRow:0 inComponent:1 animated:NO];
            
         }else{
             
@@ -145,7 +145,7 @@
         
         _districtArr = responseObject;
         
-        [_pick selectRow:0 inComponent:3 animated:YES];
+        [_pick selectRow:0 inComponent:2 animated:YES];
         
         [self pickerView:_pick didSelectRow:0 inComponent:2];
        
@@ -171,7 +171,7 @@
             
         _townArr = responseObject;
         [self pickerView:_pick didSelectRow:0 inComponent:3];
-          
+            [_pick selectRow:0 inComponent:3 animated:NO];
         }else{
             _townArr = nil;
             town = nil;
@@ -278,7 +278,13 @@
     
     DLog(@"%@",[NSString stringWithFormat:@"%@ %@ %@ %@",province,city,district,town]);
     [self clickCancel];
-    self.lb_zone.text = [NSString stringWithFormat:@"%@%@%@%@",province,city?city:@"",district?district:@"",town?town:@""];
+    if (province) {
+        
+        self.lb_zone.text = [NSString stringWithFormat:@"%@%@%@%@",province,city?city:@"",district?district:@"",town?town:@""];
+        
+       
+    }
+    
 }
 
 
@@ -337,6 +343,14 @@
         return;
     }
         
+        
+    }
+    
+    if (self.txt_message.text.length > 30) {
+        
+        [SVProgressHUD showErrorWithStatus:@"详细地址输入过长"];
+        return;
+        
     }
     
     
@@ -365,9 +379,22 @@
             allView.frame = CGRectMake(0, self.view.bounds.size.height - 200, self.view.bounds.size.width, 200);
         }];
 
-       
+        if (province) {
+            
+            NSDictionary *dic = @{
+                                  @"name":province,
+                                  @"code":provinceID
+                                  };
+            
+            NSUInteger index = [_provinceArr indexOfObject:dic];
+            
+            [_pick selectRow:index inComponent:0 animated:NO];
+            
+        }else{
+            
         [self pickerView:_pick didSelectRow:0 inComponent:0];
-        
+            
+        }
     }
 }
 
@@ -461,7 +488,7 @@
             [self getCityDataWithProvId:_provinceArr[row][@"code"]];
             
             
-            DLog(@"%d",0);
+            
             
         }
             break;
@@ -474,11 +501,6 @@
                 
                 [self getDistDataWithCityId:_cityArr[row][@"code"]];
             }
-            
-            
-            
-            DLog(@"%d",1);
-
             
            
         }
@@ -502,10 +524,10 @@
             
             if (_cityArr[tmp][@"code"]&&_districtArr[row][@"code"]) {
                 
-                [self getTownDataWithCityId:_cityArr[tmp][@"code"] DistId:_districtArr[row][@"code"]];
+                [self getTownDataWithCityId:cityID DistId:_districtArr[row][@"code"]];
             }
             
-            DLog(@"%d",2);
+            
         }
             break;
         case 3:
@@ -513,7 +535,7 @@
             town = _townArr[row][@"name"];
             townID = _townArr[row][@"code"];
 
-            DLog(@"%d",3);
+            
         }
             break;
         default:
@@ -523,7 +545,11 @@
 
     
 }
-
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+    cell.separatorInset = UIEdgeInsetsZero;
+    cell.layoutMargins = UIEdgeInsetsZero;
+    cell.preservesSuperviewLayoutMargins = NO;
+}
 
 
 

@@ -12,6 +12,9 @@
 @property (weak, nonatomic) IBOutlet UITextField *name;
 @property (weak, nonatomic) IBOutlet UITextField *phone;
 @property (weak, nonatomic) IBOutlet UITextField *detailZone;
+@property (weak, nonatomic) IBOutlet UITextField *addressLabelTF;
+@property (weak, nonatomic) IBOutlet UITextField *emailTF;
+@property (weak, nonatomic) IBOutlet UITextField *homePhoneTF;
 
 @property (weak, nonatomic) IBOutlet UILabel *zone;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayout;
@@ -53,7 +56,9 @@
     
     self.name.text = _model.contact;
     self.phone.text = _model.telephone;
-    
+    self.emailTF.text = _model.email?_model.email:@"";
+    self.addressLabelTF.text = _model.name;
+    self.homePhoneTF.text = _model.phone?_model.phone:@"";
    // NSArray *arr = [_model.addressDetail componentsSeparatedByString:@" "];
     
     self.zone.text = _model.fullAddress;
@@ -71,9 +76,9 @@
     townID = _model.townId;
     
     province = _model.provinceName;
-    city = @"";
-    district = @"";
-    town = @"";
+    city = _model.cityName;
+    district = _model.countyName;
+    town = _model.townName;
     
     
     [self initPicView];
@@ -101,13 +106,7 @@
         return;
     }
     
-//    if (STR_IS_NIL(self.txt_addressLabel.text)) {
-//        
-//        [SVProgressHUD showErrorWithStatus:@"家庭标签不能为空"];
-//        
-//        return;
-//        
-//    }
+    
     
     
     if (![Utility checkUserTelNumber:self.phone.text]) {
@@ -123,15 +122,17 @@
         return;
     }
     
-//    if (!STR_IS_NIL(self.txt_email.text)) {
-//        
-//        if (![Utility validateEmail:self.txt_email.text]) {
-//            
-//            [SVProgressHUD showErrorWithStatus:@"请输入正确的邮箱"];
-//            return;
-//        }
-//        
-//    }
+
+    if (!STR_IS_NIL(self.emailTF.text)) {
+        
+        if (![Utility validateEmail:self.emailTF.text]) {
+            
+            [SVProgressHUD showErrorWithStatus:@"邮箱格式不正确"];
+            return;
+        }
+        
+    }
+    
 
     
     [self changeAddressNet];
@@ -142,16 +143,8 @@
 - (void)changeAddressNet{
     
      [SVProgressHUD showWithStatus:@"正在修改"];
-//    [[NetworkService sharedInstance] putChangeAddressWithId:_model.id1 telephone:self.phone.text contact:self.name.text provinceId:provinceID cityId:cityID countyId:districtID townId:townID name:_model.name addressDetail:[NSString stringWithFormat:@"%@ %@",self.zone.text,self.detailZone.text] Success:^{
-//        
-//        [SVProgressHUD dismiss];
-//        [self.navigationController popViewControllerAnimated:YES];
-//        
-//    } Failure:^(NSError *error) {
-//        [SVProgressHUD showErrorWithStatus:error.userInfo[@"errmsg"]];
-//    }];
-    
-    [[NetworkService sharedInstance]putChangeAddressWithId:_model.id1 telephone:self.phone.text contact:self.name.text provinceId:provinceID cityId:cityID countyId:districtID townId:townID name:_model.name addressDetail:self.detailZone.text Phone:_model.telephone provinceName:province cityName:city countyName:district townName:town Success:^{
+
+    [[NetworkService sharedInstance]putChangeAddressWithId:_model.id1 telephone:self.phone.text contact:self.name.text provinceId:provinceID?provinceID:@"" cityId:cityID?cityID:@"" countyId:districtID?districtID:@"" townId:townID?townID:@"" name:self.addressLabelTF.text Email:self.emailTF.text addressDetail:self.detailZone.text Phone:self.homePhoneTF.text provinceName:province?province:@"" cityName:city?city:@"" countyName:district?district:@"" townName:town?town:@"" Success:^{
         
                 [SVProgressHUD dismiss];
                 [self.navigationController popViewControllerAnimated:YES];
@@ -199,6 +192,10 @@
 /**  获取城市的网络数据 **/
 - (void)getCityDataWithProvId:(NSString *)provId{
     
+    if (STR_IS_NIL(provinceID)) {
+        return;
+    }
+
     _districtArr = nil;
     _townArr = nil;
     district = nil;
@@ -217,7 +214,8 @@
             
             [self pickerView:_pick didSelectRow:0 inComponent:1];
             
-            
+            [_pick selectRow:0 inComponent:1 animated:NO];
+
         }else{
             
             _cityArr = nil;
@@ -242,7 +240,7 @@
             
             _districtArr = responseObject;
             
-            [_pick selectRow:0 inComponent:3 animated:YES];
+            [_pick selectRow:0 inComponent:2 animated:YES];
             
             [self pickerView:_pick didSelectRow:0 inComponent:2];
             
@@ -268,7 +266,8 @@
             
             _townArr = responseObject;
             [self pickerView:_pick didSelectRow:0 inComponent:3];
-            
+            [_pick selectRow:0 inComponent:3 animated:NO];
+
         }else{
             _townArr = nil;
             town = nil;
@@ -339,7 +338,12 @@
     
     DLog(@"%@",[NSString stringWithFormat:@"%@ %@ %@ %@",province,city,district,town]);
     [self clickCancel];
-    self.zone.text = [NSString stringWithFormat:@"%@%@%@%@",province,city?city:@"",district?district:@"",town?town:@""];
+    
+    if (province) {
+        
+        self.zone.text = [NSString stringWithFormat:@"%@%@%@%@",province,city?city:@"",district?district:@"",town?town:@""];
+    }
+    
 }
 
 #pragma mark - Table view data source
@@ -358,14 +362,26 @@
             allView.frame = CGRectMake(0, self.view.bounds.size.height - 200, self.view.bounds.size.width, 200);
         }];
         
-        
-        [self pickerView:_pick didSelectRow:0 inComponent:0];
+        if (province) {
+            
+            NSDictionary *dic = @{
+                                  @"name":province,
+                                  @"code":provinceID
+                                  };
+            
+            NSUInteger index = [_provinceArr indexOfObject:dic];
+            
+            [_pick selectRow:index inComponent:0 animated:NO];
+            
+        }else{
+            
+            [self pickerView:_pick didSelectRow:0 inComponent:0];
+            
+        }
+
         
     }
 }
-
-
-
 
 #pragma mark - UIPickViewDelegate/ DataSource
 
@@ -495,7 +511,7 @@
             
             if (_cityArr[tmp][@"code"]&&_districtArr[row][@"code"]) {
                 
-                [self getTownDataWithCityId:_cityArr[tmp][@"code"] DistId:_districtArr[row][@"code"]];
+                [self getTownDataWithCityId:cityID DistId:_districtArr[row][@"code"]];
             }
             
             DLog(@"%d",2);
